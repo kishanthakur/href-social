@@ -1,15 +1,36 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { storeData } from "../Reducers";
 
 export default function Form() {
   const {
     register,
     handleSubmit,
+    reset,
+    watch,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
-  console.log(errors);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onSubmitForm = (data, e) => {
+    e.preventDefault();
+    const selectedFile = watch("file");
+
+    const { photo, ...newDataWithOutPhoto } = data;
+    const newDataWithPhoto = {
+      ...newDataWithOutPhoto,
+      photo: selectedFile[0],
+    };
+    dispatch(storeData(newDataWithPhoto));
+    reset();
+    setTimeout(() => navigate("/profile"), 500);
+
+    console.log(data);
+  };
 
   const [customLink, setCustomLink] = useState([]);
   const addCustomLinkTextBox = () => {
@@ -21,7 +42,7 @@ export default function Form() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmitForm)}>
       <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-10">
         <label
           htmlFor="name"
