@@ -1,0 +1,48 @@
+{
+  "inputs":[
+    {
+      "tag" : "input",
+      "type" : "text",
+      "placeholder": "Name",
+      "name":"name"
+    },
+    {
+      "tag" : "input",
+      "type" : "text",
+      "placeholder": "Main Link",
+      "name":"mainlink"
+    },
+    {
+      "tag" : "input",
+      "type" : "text",
+      "placeholder": "Description",
+      "name":"description"
+    },
+    {
+      "tag" : "input",
+      "type" : "text",
+      "placeholder": "Email",
+      "name":"email"
+    },
+    {
+      "tag" : "input",
+      "type" : "text",
+      "placeholder": "www.twitter.com/...",
+      "name":"twitterlink"
+    },
+    {
+      "tag" : "input",
+      "type" : "text",
+      "placeholder": "www.linkedin.com/...",
+      "name":"linkedinlink"
+    },
+    {
+      "tag" : "input",
+      "type" : "text",
+      "placeholder": "www.instagram.com/...",
+      "name":"instagramlink"
+    }
+
+  ]
+
+}
