@@ -47,7 +47,7 @@ export default function Profile() {
           <p className="mt-5 mb-0 font-semibold text-xl text-center w-3/4 ">
             {storedData.name}
           </p>
-          <p className="mt-3 mb-4  line-clamp-5 italic font-mono text-lg text-center w-1/4 ">
+          <p className="mt-3 mb-4  line-clamp-5 italic font-mono text-lg text-center w-3/5 ">
             {storedData.description}
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function Profile() {
             <a href={value} key={index} target="_blank" rel="noreferrer">
               <div className="flex flex-wrap justify-center -mt-3">
                 <div
-                  className={`${colorbg} ${colorText} m-4 w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4 text-center font-bold p-4 rounded`}
+                  className={`${colorbg} ${colorText} m-4 w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-2/5 text-center font-bold p-4 rounded`}
                 >
                   <p>{key}</p>
                 </div>
