@@ -9,7 +9,6 @@ export default function Form() {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm();
 
@@ -18,16 +17,16 @@ export default function Form() {
 
   const onSubmitForm = (data, e) => {
     e.preventDefault();
-    const selectedFile = watch("file");
 
     const { photo, ...newDataWithOutPhoto } = data;
+    const fileList = data.photo[0].name;
     const newDataWithPhoto = {
       ...newDataWithOutPhoto,
-      photo: selectedFile[0],
+      photo: fileList,
     };
     dispatch(storeData(newDataWithPhoto));
     reset();
-    setTimeout(() => navigate("/profile"), 500);
+    navigate("/profile");
 
     console.log(data);
   };
@@ -127,8 +126,8 @@ export default function Form() {
         </label>
         <input
           type="email"
-          id="email"
-          {...register("email", {
+          id="Email"
+          {...register("Email", {
             required: "Email is required",
           })}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -139,60 +138,60 @@ export default function Form() {
 
       <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-6">
         <label
-          htmlFor="twitterlink"
+          htmlFor="Twitter"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
         >
           Twitter Link
         </label>
         <input
           type="url"
-          id="twitterlink"
-          {...register("twitterlink")}
+          id="Twitter"
+          {...register("Twitter")}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="www.twitter.com/..."
         />
       </div>
       <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-6">
         <label
-          htmlFor="linkedinlink"
+          htmlFor="Linkedin"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
         >
           Linkedin Link
         </label>
         <input
           type="url"
-          id="linkedinlink"
-          {...register("linkedinlink")}
+          id="Linkedin"
+          {...register("Linkedin")}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="www.linkedin.com/..."
         />
       </div>
       <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-6">
         <label
-          htmlFor="instagramlink"
+          htmlFor="Instagram"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
         >
           Instagram Link
         </label>
         <input
           type="url"
-          id="instagramlink"
-          {...register("instagramlink")}
+          id="Instagram"
+          {...register("Instagram")}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="www.instagram.com/..."
         />
       </div>
       <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-6">
         <label
-          htmlFor="youtubelink"
+          htmlFor="Youtube"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
         >
           Youtube Link
         </label>
         <input
           type="url"
-          id="youtubelink"
-          {...register("youtubelink")}
+          id="Youtube"
+          {...register("Youtube")}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="www.youtube.com/..."
         />
@@ -203,23 +202,23 @@ export default function Form() {
           className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-6"
         >
           <label
-            htmlFor="youtubelink"
+            htmlFor={`customlink${item}`}
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
           >
             Custom Link #{item}
           </label>
-          <div className="flex flex-col space-x-0">
+          <div key={index} className="flex flex-col space-x-0">
             <input
               type="text"
-              id={`customlink${item}`}
-              {...register(`customlink${item}name`)}
+              id={`customname${item}`}
+              {...register(`customname${item}`)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 mb-3 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Name"
             />
             <input
               type="url"
               id={`customlink${item}`}
-              {...register(`customlink${item}link`)}
+              {...register(`customlink${item}`)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 mb-3 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Link"
             />
@@ -262,6 +261,10 @@ export default function Form() {
             <option value="red">Red</option>
             <option value="green">Green</option>
             <option value="blue">Blue</option>
+            <option value="pink">Pink</option>
+            <option value="indigo">Indigo</option>
+            <option value="purple">Purple</option>
+            <option value="yellow">Yellow</option>
           </select>
         </div>
       </div>
