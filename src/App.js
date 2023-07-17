@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
 import Footer from "./components/Footer";
+import Headers from "./components/Header";
 
 function App() {
   const storedData = useSelector((state) => state.data.storedData);
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <>
+      <Headers />
       <div className={`${colorText} min-h-screen`}>
         <Routes>
           <Route>
