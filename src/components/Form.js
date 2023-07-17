@@ -78,8 +78,8 @@ export default function Form() {
             )}
           </div>
         </div>
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="mainlink"
@@ -102,8 +102,8 @@ export default function Form() {
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="description"
@@ -126,8 +126,8 @@ export default function Form() {
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="photo"
@@ -150,8 +150,8 @@ export default function Form() {
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="email"
@@ -175,8 +175,8 @@ export default function Form() {
           </div>
         </div>
 
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="Twitter"
@@ -194,8 +194,8 @@ export default function Form() {
             </div>{" "}
           </div>
         </div>
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="Linkedin"
@@ -213,8 +213,8 @@ export default function Form() {
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="Instagram"
@@ -232,8 +232,8 @@ export default function Form() {
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="mt-5">
+          <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
                 htmlFor="Youtube"
@@ -335,7 +335,7 @@ export default function Form() {
           </select>
         </div>
       </div> */}
-        <div className="flex justify-center mt-6 mb-10">
+        <div className="flex justify-center -mt-2 mb-10">
           <button
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-80 sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
