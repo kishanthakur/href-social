@@ -8,7 +8,7 @@ import Footer from "./components/Footer";
 function App() {
   const storedData = useSelector((state) => state.data.storedData);
 
-  const colorText = storedData ? "bg-yellow-100" : "bg-white-50";
+  const colorText = storedData.name ? "bg-yellow-100" : "bg-white-50";
 
   return (
     <>
