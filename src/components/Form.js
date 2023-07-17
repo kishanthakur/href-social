@@ -10,6 +10,7 @@ export default function Form() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm();
 
@@ -39,6 +40,17 @@ export default function Form() {
 
   const deleteCustomLink = () => {
     setCustomLink(customLink.slice(0, -1));
+  };
+
+  const validateFileExtension = () => {
+    const files = watch("photo");
+    if (files && files.length > 0) {
+      const fileExtension = files[0].name.split(".").pop().toLowerCase();
+      const allowedExtensions = ["jpg", "png"];
+      if (!allowedExtensions.includes(fileExtension)) {
+        return "Invalid file extension, Allowed extensions are jpg, png";
+      }
+    }
   };
 
   return (
@@ -114,6 +126,7 @@ export default function Form() {
             id="photo"
             {...register("photo", {
               required: "Photo is required",
+              validate: validateFileExtension,
             })}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-1/2 p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
