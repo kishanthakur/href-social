@@ -6,6 +6,8 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { store } from "./Store";
 import { Provider } from "react-redux";
+import "tailwindcss/tailwind.css";
+import "devicon/devicon.min.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

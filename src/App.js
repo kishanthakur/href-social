@@ -1,15 +1,14 @@
-import "./App.css";
 import Form from "./components/Form";
 import Profile from "./components/Profile";
 import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
+import "tailwindcss/tailwind.css";
+import Footer from "./components/Footer";
 
 function App() {
   const storedData = useSelector((state) => state.data.storedData);
-  console.log(storedData.bgcolor);
-  const colorText = storedData.bgcolor
-    ? `bg-${storedData.bgcolor}-200`
-    : "bg-white-100";
+
+  const colorText = storedData ? "bg-yellow-100" : "bg-white-50";
 
   return (
     <>
@@ -21,6 +20,7 @@ function App() {
           </Route>
         </Routes>
       </div>
+      <Footer />
     </>
   );
 }

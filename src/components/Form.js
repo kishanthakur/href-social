@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { storeData } from "../Reducers";
+import "tailwindcss/tailwind.css";
 
 export default function Form() {
   const {
@@ -241,7 +242,7 @@ export default function Form() {
           + Add Custom Link
         </button>
       </div>
-      <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-3">
+      {/* <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-3">
         <label
           htmlFor="bgcolor"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
@@ -258,16 +259,16 @@ export default function Form() {
             <option value="" defaultValue>
               Select Background Color
             </option>
-            <option value="red">Red</option>
-            <option value="green">Green</option>
-            <option value="blue">Blue</option>
-            <option value="pink">Pink</option>
-            <option value="indigo">Indigo</option>
-            <option value="purple">Purple</option>
-            <option value="yellow">Yellow</option>
+            <option value="bg-red-600">Red</option>
+            <option value="bg-green-600">Green</option>
+            <option value="bg-blue-600">Blue</option>
+            <option value="bg-pink-600">Pink</option>
+            <option value="bg-indigo-600">Indigo</option>
+            <option value="bg-purple-600">Purple</option>
+            <option value="bg-yellow-600">Yellow</option>
           </select>
         </div>
-      </div>
+      </div> */}
       <div className="ml-9 sm:ml-9 md:ml-20 lg:ml-40 xl:ml-70 mt-6 mb-10">
         <button
           type="submit"
