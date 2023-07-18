@@ -1,4 +1,5 @@
-import React from "react";
+import { React, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
@@ -7,6 +8,8 @@ export default function Profile() {
   const storedData = useSelector((state) => state.data.storedData);
   const colorbg = "bg-yellow-600";
   const colorText = "text-yellow-100";
+
+  const navigate = useNavigate();
 
   const newStoredData = { ...storedData };
   const links = Object.fromEntries(
@@ -22,8 +25,15 @@ export default function Profile() {
     })
   );
 
+  useEffect(() => {
+    if (!storedData.name) {
+      console.log("Navigating to home");
+      navigate("/");
+    }
+  }, [storedData.name, navigate]);
+
   function iconExists(iconClass) {
-    iconClass = iconClass.toLowerCase();
+    iconClass = iconClass.toLowerCase().trim().replace(" ", "-");
     const iconElement = document.createElement("i");
     iconElement.className = "fa fa-" + iconClass;
     document.body.appendChild(iconElement);
