@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
 
@@ -20,6 +21,17 @@ export default function Profile() {
       );
     })
   );
+
+  function iconExists(iconClass) {
+    iconClass = iconClass.toLowerCase();
+    const iconElement = document.createElement("i");
+    iconElement.className = "fa fa-" + iconClass;
+    document.body.appendChild(iconElement);
+    const content = window.getComputedStyle(iconElement, "::before").content;
+    document.body.removeChild(iconElement);
+    if (content !== "none") return "fa fa-" + iconClass;
+    else return "fa fa-link";
+  }
 
   const newLinks = Object.fromEntries(
     Object.entries(links).reduce((acc, [key, value]) => {
@@ -58,7 +70,10 @@ export default function Profile() {
                 <div
                   className={`${colorbg} ${colorText} m-4 w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/3 text-center font-bold p-4 rounded`}
                 >
-                  <p>{key}</p>
+                  <div className="flex items-center space-x-2 justify-center">
+                    <i className={iconExists(key)}></i>
+                    <p>{key}</p>
+                  </div>
                 </div>
               </div>
             </a>
