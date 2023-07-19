@@ -12,6 +12,8 @@ export default function Form() {
     handleSubmit,
     reset,
     watch,
+    trigger,
+    getValues,
     formState: { errors },
   } = useForm();
 
@@ -19,11 +21,10 @@ export default function Form() {
   const dispatch = useDispatch();
 
   const [customLink, setCustomLink] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState();
 
-  const onSubmitForm = (data, e) => {
-    e.preventDefault();
-
+  const dispatchData = () => {
+    const data = getValues();
     const { photo, ...newDataWithOutPhoto } = data;
     const fileList = data.photo[0].name;
     const newDataWithPhoto = {
@@ -32,6 +33,11 @@ export default function Form() {
     };
     dispatch(storeData(newDataWithPhoto));
     reset();
+  };
+
+  const onSubmit = (data, e) => {
+    e.preventDefault();
+    dispatchData();
     if (!showModal) navigate("/profile");
 
     console.log(data);
@@ -56,8 +62,16 @@ export default function Form() {
     }
   };
 
+  const handleSubmitClick = async () => {
+    const isValid = await trigger();
+    if (isValid) {
+      dispatchData();
+      setShowModal(true);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmitForm)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className=" bg-white">
         <div className="flex flex-wrap justify-center items-center mt-10">
           <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
@@ -340,8 +354,8 @@ export default function Form() {
             Preview
           </button>
           <button
-            type="submit"
-            onClick={() => setShowModal(true)}
+            type="button"
+            onClick={handleSubmitClick}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
             Submit
