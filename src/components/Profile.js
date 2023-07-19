@@ -59,37 +59,40 @@ export default function Profile() {
 
   return (
     <>
-      <div>
-        <div className="flex flex-col justify-center items-center">
-          <img
-            className="rounded-full w-32 h-32 mt-8"
-            src="/Kishan-pp.png"
-            alt="Profile"
-          />
-          <p className="mt-5 mb-0 font-semibold text-xl text-center w-3/4 ">
-            {storedData.name}
-          </p>
-          <p className="mt-3 mb-4 line-clamp-5 italic font-mono text-lg text-center w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4  ">
-            {storedData.description}
-          </p>
-        </div>
-        {Object.entries(newLinks).map(([key, value], index) => {
-          return (
-            <a href={value} key={index} target="_blank" rel="noreferrer">
-              <div className="flex flex-wrap justify-center -mt-3">
-                <div
-                  className={`${colorbg} ${colorText} m-4 w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/3 text-center font-bold p-4 rounded`}
-                >
-                  <div className="flex items-center space-x-2 justify-center">
-                    <i className={iconExists(key)}></i>
-                    <p>{key}</p>
-                  </div>
+      <div className="flex flex-col justify-center items-center ">
+        <img
+          className="rounded-full w-32 h-32 mt-8"
+          src="/Kishan-pp.png"
+          alt="Profile"
+        />
+        <p className="mt-5 mb-0 font-semibold text-xl text-center w-3/4 ">
+          {storedData.name}
+        </p>
+        <p className="mt-3 mb-2 line-clamp-5 italic font-mono text-lg text-center w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4  ">
+          {storedData.description}
+        </p>
+      </div>
+      {Object.entries(newLinks).map(([key, value], index) => {
+        return (
+          <div className="flex flex-wrap justify-center mt-3.5">
+            <a
+              href={value}
+              target="_blank"
+              rel="noreferrer"
+              className="w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/3 xl:w-1/3"
+            >
+              <div
+                className={`${colorbg} ${colorText}  text-center font-bold p-4 rounded`}
+              >
+                <div className="flex items-center space-x-2 justify-center">
+                  <i className={iconExists(key)}></i>
+                  <p>{key}</p>
                 </div>
               </div>
             </a>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </>
   );
 }
