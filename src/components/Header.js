@@ -3,7 +3,7 @@ import React from "react";
 export default function Headers() {
   return (
     <>
-      <div className="bg-yellow-50 -mt-1 ">
+      <div className="bg-yellow-50 -mt-1 fixed top-0 left-0 w-full">
         <img
           src="/href-logo-3.svg"
           alt="href social"

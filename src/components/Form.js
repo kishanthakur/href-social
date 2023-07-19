@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -12,7 +12,6 @@ export default function Form() {
     handleSubmit,
     reset,
     watch,
-    trigger,
     getValues,
     formState: { errors },
   } = useForm();
@@ -22,6 +21,7 @@ export default function Form() {
 
   const [customLink, setCustomLink] = useState([]);
   const [showModal, setShowModal] = useState();
+  const [submit, setSubmit] = useState(false);
 
   const dispatchData = () => {
     const data = getValues();
@@ -35,12 +35,13 @@ export default function Form() {
     reset();
   };
 
-  const onSubmit = (data, e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
     dispatchData();
-    if (!showModal) navigate("/profile");
-
-    console.log(data);
+    if (Object.keys(errors).length === 0 && !submit) navigate("/profile");
+    else {
+      setShowModal(true);
+    }
   };
 
   const addCustomLinkTextBox = () => {
@@ -62,18 +63,17 @@ export default function Form() {
     }
   };
 
-  const handleSubmitClick = async () => {
-    const isValid = await trigger();
-    if (isValid) {
-      dispatchData();
-      setShowModal(true);
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      setShowModal(false);
+      setSubmit(false);
     }
-  };
+  }, [errors]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className=" bg-white">
-        <div className="flex flex-wrap justify-center items-center mt-10">
+        <div className="flex flex-wrap justify-center items-center mt-24">
           <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
             <label
               htmlFor="name"
@@ -349,18 +349,21 @@ export default function Form() {
         <div className="flex justify-center -mt-2 mb-10 ml-12 mr-12">
           <button
             type="submit"
+            onClick={() => setSubmit(false)}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
             Preview
           </button>
           <button
-            type="button"
-            onClick={handleSubmitClick}
+            type="submit"
+            onClick={() => setSubmit(true)}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
             Submit
           </button>
-          {showModal && Object.keys(errors).length === 0 && <DialogBox />}
+          {showModal && submit && Object.keys(errors).length === 0 && (
+            <DialogBox />
+          )}
         </div>
       </div>
     </form>

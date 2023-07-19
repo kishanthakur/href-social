@@ -60,7 +60,7 @@ export default function Profile() {
     <>
       <div className="flex flex-col justify-center items-center ">
         <img
-          className="rounded-full w-32 h-32 mt-8"
+          className="rounded-full w-32 h-32 mt-20"
           src="/Kishan-pp.png"
           alt="Profile"
         />
