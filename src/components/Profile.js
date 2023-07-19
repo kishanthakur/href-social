@@ -27,7 +27,6 @@ export default function Profile() {
 
   useEffect(() => {
     if (!storedData.name) {
-      console.log("Navigating to home");
       navigate("/");
     }
   }, [storedData.name, navigate]);
@@ -74,7 +73,7 @@ export default function Profile() {
       </div>
       {Object.entries(newLinks).map(([key, value], index) => {
         return (
-          <div className="flex flex-wrap justify-center mt-3.5">
+          <div key={index} className="flex flex-wrap justify-center mt-3.5">
             <a
               href={value}
               target="_blank"
