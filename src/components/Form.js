@@ -82,22 +82,22 @@ export default function Form() {
           <div className="flex flex-wrap justify-center items-center mt-3">
             <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
               <label
-                htmlFor="mainlink"
+                htmlFor="username"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
               >
-                Main Link
+                Username
               </label>
               <input
-                type="url"
-                id="mainlink"
-                {...register("mainlink", {
-                  required: "Main Link is required",
+                type="text"
+                id="username"
+                {...register("username", {
+                  required: "Username is required",
                 })}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="www.kishathakur.com"
+                placeholder="kishathakur"
               />
-              {errors.mainlink && (
-                <p className="text-red-600">{errors.mainlink.message}</p>
+              {errors.username && (
+                <p className="text-red-600">{errors.username.message}</p>
               )}
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function Form() {
                 id="Twitter"
                 {...register("Twitter")}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="www.twitter.com/..."
+                placeholder="https://www.twitter.com/..."
               />
             </div>{" "}
           </div>
@@ -208,7 +208,7 @@ export default function Form() {
                 id="Linkedin"
                 {...register("Linkedin")}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="www.linkedin.com/..."
+                placeholder="https://www.linkedin.com/..."
               />
             </div>
           </div>
@@ -227,7 +227,7 @@ export default function Form() {
                 id="Instagram"
                 {...register("Instagram")}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="www.instagram.com/..."
+                placeholder="https://www.instagram.com/..."
               />
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function Form() {
                 id="Youtube"
                 {...register("Youtube")}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="www.youtube.com/..."
+                placeholder="https://www.youtube.com/..."
               />
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function Form() {
                   id={`customlink${item}`}
                   {...register(`customlink${item}`)}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Link"
+                  placeholder="https://www.example.com"
                 />
               </div>
               <button

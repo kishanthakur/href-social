@@ -17,7 +17,7 @@ export default function Profile() {
       return (
         value !== "" &&
         key !== "name" &&
-        key !== "mainlink" &&
+        key !== "username" &&
         key !== "description" &&
         key !== "bgcolor" &&
         key !== "photo"
