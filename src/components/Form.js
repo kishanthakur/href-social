@@ -35,7 +35,7 @@ export default function Form() {
     reset();
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = (data, e) => {
     e.preventDefault();
     dispatchData();
     if (Object.keys(errors).length === 0 && !submit) navigate("/profile");
