@@ -1,12 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 const DialogBox = () => {
   const [modal, setModal] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const storedData = useSelector((state) => state.data.storedData);
 
   const goToMyProfile = () => {
-    navigate("/profile");
+    navigate(`/${storedData.username}`);
+  };
+
+  const handlOkGotItClick = () => {
+    setModal(false);
+    if (location.pathname === "/preview") {
+      navigate(`/${storedData.username}`);
+    }
   };
 
   return (
@@ -21,7 +32,7 @@ const DialogBox = () => {
                     Congratulations!
                   </h3>
                   <h5 className="text-sm mt-1 text-gray-500 font=semibold">
-                    Now, you have all the links at one place.
+                    Now, you have all your social the links at one place.
                   </h5>
                 </div>
                 <div className="relative p-6 flex-auto">
@@ -33,17 +44,20 @@ const DialogBox = () => {
                   <button
                     className="text-white bg-blue-500 active:bg-blue-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                     type="button"
-                    onClick={() => setModal(false)}
+                    onClick={handlOkGotItClick}
                   >
                     ok, Got it
                   </button>
-                  <button
-                    className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                    type="button"
-                    onClick={goToMyProfile}
-                  >
-                    Go to my Profile
-                  </button>
+
+                  {location.pathname !== "/preview" ? (
+                    <button
+                      className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      type="button"
+                      onClick={goToMyProfile}
+                    >
+                      Go to my Profile
+                    </button>
+                  ) : null}
                 </div>
               </div>
             </div>

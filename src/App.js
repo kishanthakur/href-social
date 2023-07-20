@@ -18,7 +18,9 @@ function App() {
         <Routes>
           <Route>
             <Route exact path="/" element={<Form />}></Route>
-            <Route exact path="/profile" element={<Profile />}></Route>
+            <Route exact path="/preview" element={<Profile />}></Route>
+            <Route exact path="/:username" element={<Profile />}></Route>
+            <Route exact path="/edit/:username" element={<Form />}></Route>
           </Route>
         </Routes>
       </div>

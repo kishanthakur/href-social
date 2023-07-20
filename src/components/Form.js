@@ -35,10 +35,9 @@ export default function Form() {
     reset();
   };
 
-  const onSubmit = (data, e) => {
-    e.preventDefault();
+  const onSubmit = () => {
     dispatchData();
-    if (Object.keys(errors).length === 0 && !submit) navigate("/profile");
+    if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
       setShowModal(true);
     }
