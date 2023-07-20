@@ -31,6 +31,10 @@ export default function Profile() {
     }
   }, [storedData.name, navigate]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   function iconExists(iconClass) {
     iconClass = iconClass.toLowerCase().trim().replace(" ", "-");
     const iconElement = document.createElement("i");
@@ -60,7 +64,7 @@ export default function Profile() {
     <>
       <div className="flex flex-col justify-center items-center ">
         <img
-          className="rounded-full w-32 h-32 mt-20"
+          className="rounded-full w-32 h-32 mt-24"
           src="/Kishan-pp.png"
           alt="Profile"
         />
