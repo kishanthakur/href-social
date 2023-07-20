@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { storeData } from "../Reducers";
 import "tailwindcss/tailwind.css";
@@ -18,6 +18,7 @@ export default function Form() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const [customLink, setCustomLink] = useState([]);
   const [showModal, setShowModal] = useState();
@@ -346,19 +347,22 @@ export default function Form() {
         </div>
       </div> */}
         <div className="flex justify-center -mt-2 mb-10 ml-12 mr-12">
-          <button
-            type="submit"
-            onClick={() => setSubmit(false)}
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
-          >
-            Preview
-          </button>
+          {location.pathname === "/" ? (
+            <button
+              type="submit"
+              onClick={() => setSubmit(false)}
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
+            >
+              Preview
+            </button>
+          ) : null}
+
           <button
             type="submit"
             onClick={() => setSubmit(true)}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
-            Submit
+            {location.pathname.includes("/edit") ? "Update" : "Submit"}
           </button>
           {showModal && submit && Object.keys(errors).length === 0 && (
             <DialogBox />
