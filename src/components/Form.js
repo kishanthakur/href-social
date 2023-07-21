@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { storeData } from "../Reducers";
 import "tailwindcss/tailwind.css";
 import DialogBox from "./DialogBox";
+import { App, Credentials } from "realm-web";
 
 export default function Form() {
   const {
@@ -14,11 +15,13 @@ export default function Form() {
     watch,
     getValues,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: "onChange" });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+
+  const app = new App({ id: "href-social-qmufp" });
 
   const [customLink, setCustomLink] = useState([]);
   const [showModal, setShowModal] = useState();
@@ -26,6 +29,7 @@ export default function Form() {
 
   const dispatchData = () => {
     const data = getValues();
+
     const { photo, ...newDataWithOutPhoto } = data;
     const fileList = data.photo[0].name;
     const newDataWithPhoto = {
@@ -36,12 +40,25 @@ export default function Form() {
     reset();
   };
 
-  const onSubmit = () => {
-    dispatchData();
+  const connectToDatabase = async () => {
+    await app.logIn(Credentials.anonymous());
+    const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+    const collection = mongoClient
+      .db("href-social-db")
+      .collection("href-social-collection");
+    return collection;
+  };
+
+  const onSubmit = async (data) => {
     if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
       setShowModal(true);
     }
+    dispatchData();
+
+    const collections = await connectToDatabase();
+
+    await collections.insertOne(data);
   };
 
   const addCustomLinkTextBox = () => {
@@ -63,12 +80,27 @@ export default function Form() {
     }
   };
 
+  const validateUsername = async () => {
+    const username = watch("username");
+    const collections = await connectToDatabase();
+    const usernameAvailable = await collections.findOne({
+      username: `${username}`,
+    });
+    //console.log(usernameAvailable);
+    if (usernameAvailable !== null) return "Username already taken";
+  };
+
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       setShowModal(false);
       setSubmit(false);
     }
   }, [errors]);
+
+  const handleSubmitClick = (e) => {
+    setSubmit(true);
+    console.log(e.target.value);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -109,6 +141,7 @@ export default function Form() {
                 id="username"
                 {...register("username", {
                   required: "Username is required",
+                  validate: validateUsername,
                 })}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="kishathakur"
@@ -351,6 +384,7 @@ export default function Form() {
             <button
               type="submit"
               onClick={() => setSubmit(false)}
+              value="Preview"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
             >
               Preview
@@ -359,7 +393,8 @@ export default function Form() {
 
           <button
             type="submit"
-            onClick={() => setSubmit(true)}
+            onClick={handleSubmitClick}
+            value={location.pathname.includes("/edit") ? "Update" : "Submit"}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
             {location.pathname.includes("/edit") ? "Update" : "Submit"}
