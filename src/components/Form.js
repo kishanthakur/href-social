@@ -198,15 +198,23 @@ export default function Form() {
               {errors.username &&
                 checkUsername === false &&
                 usernameAvailable === false && (
-                  <p className="text-red-600 bold mt-1">
+                  <p className="text-red-600 font-semibold mt-1">
                     {errors.username.message}
                   </p>
                 )}
               {checkUsername && usernameAvailable === false && (
-                <p className="bold mt-1">Checking Username...</p>
+                <>
+                  <div className="mt-2 flex justify-start mt-1 space-x-1">
+                    <div className="animate-spin border-t-2 border-b-2 border-blue-500 w-5 h-5 rounded-full"></div>
+                    <p className="font-semibold"> Checking the Username</p>
+                  </div>
+                </>
               )}
+
               {usernameAvailable && (
-                <p className="text-green-600 bold mt-1">Username available</p>
+                <p className="text-green-600 font-semibold mt-1">
+                  Username available
+                </p>
               )}
             </div>
           </div>

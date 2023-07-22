@@ -26,7 +26,7 @@ export default function Headers() {
                 className="bg-blue-500 text-white px-4 py-2 rounded"
                 onClick={() => navigate(`/edit/${storedData.username}`)}
               >
-                Edit Links
+                Edit Profile
               </button>
             ) : null}
             {param.pathname === "/preview" ? (
