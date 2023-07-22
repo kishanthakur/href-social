@@ -7,16 +7,16 @@ const DialogBox = () => {
   const [modal, setModal] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const storedData = useSelector((state) => state.data.storedData);
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
 
   const goToMyProfile = () => {
-    navigate(`/${storedData.username}`);
+    navigate(`/${DATA_FROM_STATE.username}`);
   };
 
   const handlOkGotItClick = () => {
     setModal(false);
     if (location.pathname === "/preview") {
-      navigate(`/${storedData.username}`);
+      navigate(`/${DATA_FROM_STATE.username}`);
     }
   };
 

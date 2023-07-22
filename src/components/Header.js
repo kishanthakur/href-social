@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 export default function Headers() {
   const param = useLocation();
   const navigate = useNavigate();
-  const storedData = useSelector((state) => state.data.storedData);
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
   const [showModal, setShowModal] = useState(false);
   console.log(param);
 
@@ -24,7 +24,7 @@ export default function Headers() {
             {param.pathname !== "/" && !param.pathname.includes("/edit") ? (
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={() => navigate(`/edit/${storedData.username}`)}
+                onClick={() => navigate(`/edit/${DATA_FROM_STATE.username}`)}
               >
                 Edit Profile
               </button>

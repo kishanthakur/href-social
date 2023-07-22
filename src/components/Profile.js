@@ -4,19 +4,22 @@ import { App, Credentials } from "realm-web";
 import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
 import Loading from "./Loading";
+import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
+import { useDispatch } from "react-redux";
 
 export default function Profile() {
-  const storedData = useSelector((state) => state.data.storedData);
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
   const location = useLocation();
   const colorbg = "bg-yellow-600";
   const colorText = "text-yellow-100";
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (storedData.name) {
+    if (DATA_FROM_STATE.name) {
       console.log("inside if");
-      setProfileData(storedData);
+      setProfileData(DATA_FROM_STATE);
       setLoading(false);
     } else {
       async function fetchData() {
@@ -34,10 +37,15 @@ export default function Profile() {
 
         setProfileData(dataByUserName);
         setLoading(false);
+        const { _id, ...updatedDataByUsername } = dataByUserName;
+        dispatch(STORE_DATA_IN_STATE(updatedDataByUsername));
+        dispatch(
+          STORE_TOTAL_CUSTOM_LINKS(updatedDataByUsername.totalCustomLinks)
+        );
       }
       fetchData();
     }
-  }, [storedData, location.pathname]);
+  }, [DATA_FROM_STATE, dispatch, location.pathname]);
 
   const navigate = useNavigate();
 
@@ -51,16 +59,17 @@ export default function Profile() {
         key !== "description" &&
         key !== "bgcolor" &&
         key !== "photo" &&
-        key !== "_id"
+        key !== "_id" &&
+        key !== "totalCustomLinks"
       );
     })
   );
 
   useEffect(() => {
     if (location.pathname === "/preview") {
-      if (!storedData.name) navigate("/");
+      if (!DATA_FROM_STATE.name) navigate("/");
     }
-  }, [storedData, navigate, location]);
+  }, [DATA_FROM_STATE, navigate, location]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

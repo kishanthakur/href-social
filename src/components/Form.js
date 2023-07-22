@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { storeData } from "../Reducers";
 import "tailwindcss/tailwind.css";
 import DialogBox from "./DialogBox";
 import { App, Credentials } from "realm-web";
 import { useSelector } from "react-redux";
+import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
+import Loading from "./Loading";
 
 export default function Form() {
   const {
@@ -25,9 +26,10 @@ export default function Form() {
 
   const app = new App({ id: "href-social-qmufp" });
 
-  const storedData = useSelector((state) => state.data.storedData);
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const CUSTOM_LINKS = useSelector((state) => state.DATA.TOTAL_CUSTOM_LINKS);
 
-  const [customLink, setCustomLink] = useState([]);
+  const [customLink, setCustomLink] = useState(CUSTOM_LINKS);
   const [showModal, setShowModal] = useState();
   const [submit, setSubmit] = useState(false);
 
@@ -39,7 +41,8 @@ export default function Form() {
       ...newDataWithOutPhoto,
       photo: fileList,
     };
-    dispatch(storeData(newDataWithPhoto));
+    dispatch(STORE_DATA_IN_STATE(newDataWithPhoto));
+    dispatch(STORE_TOTAL_CUSTOM_LINKS(customLink));
     reset();
   };
 
@@ -52,8 +55,17 @@ export default function Form() {
     return collection;
   };
 
+  useEffect(() => {
+    if (location.pathname.includes("/edit")) {
+      if (!DATA_FROM_STATE.name) navigate("/");
+    }
+  }, [DATA_FROM_STATE, navigate, location]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = async (data) => {
-    console.log(data);
+    setIsLoading(true);
+    const updatedData = { ...data, totalCustomLinks: customLink };
     if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
       setShowModal(true);
@@ -62,7 +74,8 @@ export default function Form() {
 
     const collections = await connectToDatabase();
 
-    await collections.insertOne(data);
+    await collections.insertOne(updatedData);
+    setIsLoading(false);
   };
 
   const addCustomLinkTextBox = () => {
@@ -88,7 +101,7 @@ export default function Form() {
   const [usernameAvailable, setUsernameAvailable] = useState(false);
 
   const validateUsername = async () => {
-    if (!location.pathname.includes("/edit")) {
+    if (!location.pathname.includes("/edit") && !submit) {
       setCheckUsername(true);
       setUsernameAvailable(false);
       const username = watch("username");
@@ -123,9 +136,9 @@ export default function Form() {
   useEffect(() => {
     //console.log("Redux : " + storedData);
     if (location.pathname !== "/") {
-      if (storedData.name) {
-        for (let key in storedData) {
-          setValue(key, storedData[key]);
+      if (DATA_FROM_STATE.name) {
+        for (let key in DATA_FROM_STATE) {
+          setValue(key, DATA_FROM_STATE[key]);
         }
       } else {
         async function fetchData() {
@@ -145,11 +158,11 @@ export default function Form() {
 
         const dataObj = fetchData();
         for (let key in dataObj) {
-          setValue(key, storedData[key]);
+          setValue(key, DATA_FROM_STATE[key]);
         }
       }
     }
-  }, [storedData, setValue, location]);
+  }, [DATA_FROM_STATE, setValue, location]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -464,8 +477,10 @@ export default function Form() {
             value={location.pathname.includes("/edit") ? "Update" : "Submit"}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
+            {isLoading ? <Loading /> : null}
             {location.pathname.includes("/edit") ? "Update" : "Submit"}
           </button>
+
           {showModal && submit && Object.keys(errors).length === 0 && (
             <DialogBox />
           )}
