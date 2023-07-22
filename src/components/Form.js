@@ -99,8 +99,10 @@ export default function Form() {
       //console.log(usernameAvailable.name);
       if (usernameAvailable !== null) {
         setCheckUsername(false);
+        setUsernameAvailable(false);
         return "Username already taken";
       } else {
+        setCheckUsername(false);
         setUsernameAvailable(true);
       }
     }
@@ -193,11 +195,13 @@ export default function Form() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="kishathakur"
               />
-              {errors.username && checkUsername === false && (
-                <p className="text-red-600 bold mt-1">
-                  {errors.username.message}
-                </p>
-              )}
+              {errors.username &&
+                checkUsername === false &&
+                usernameAvailable === false && (
+                  <p className="text-red-600 bold mt-1">
+                    {errors.username.message}
+                  </p>
+                )}
               {checkUsername && usernameAvailable === false && (
                 <p className="bold mt-1">Checking Username...</p>
               )}
