@@ -1,15 +1,18 @@
 import Form from "./components/Form";
 import Profile from "./components/Profile";
 import { Routes, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
 import Footer from "./components/Footer";
 import Headers from "./components/Header";
+import { useLocation } from "react-router-dom";
 
 function App() {
-  const storedData = useSelector((state) => state.data.storedData);
+  const location = useLocation();
 
-  const colorText = storedData.name ? "bg-yellow-100" : "bg-white-50";
+  const colorText =
+    location.pathname === "/" || location.pathname.includes("/edit")
+      ? "bg-white-50"
+      : "bg-yellow-100";
 
   return (
     <>
