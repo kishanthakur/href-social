@@ -31,6 +31,7 @@ export default function Form() {
   const [customLink, setCustomLink] = useState(CUSTOM_LINKS);
   const [showModal, setShowModal] = useState();
   const [submit, setSubmit] = useState(false);
+  const [deleteBtn, setDeleteBtn] = useState(true);
 
   const dispatchData = () => {
     const data = getValues();
@@ -61,7 +62,14 @@ export default function Form() {
   }, [DATA_FROM_STATE, navigate, location]);
 
   const onSubmit = async (data) => {
-    const updatedData = { ...data, totalCustomLinks: customLink };
+    const { photo, ...newDataWithOutPhoto } = data;
+    const fileList = data.photo[0].name;
+    const updatedData = {
+      ...newDataWithOutPhoto,
+      photo: fileList,
+      totalCustomLinks: customLink,
+    };
+    // const updatedData = { ...data, totalCustomLinks: customLink };
     if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
       setShowModal(true);
@@ -129,33 +137,29 @@ export default function Form() {
   };
 
   useEffect(() => {
-    //console.log("Redux : " + storedData);
+    console.log("Redux : " + DATA_FROM_STATE.photo);
     if (location.pathname !== "/") {
-      if (DATA_FROM_STATE.name) {
-        for (let key in DATA_FROM_STATE) {
-          setValue(key, DATA_FROM_STATE[key]);
-        }
-      } else {
-        async function fetchData() {
-          const app = new App({ id: "href-social-qmufp" });
-          await app.logIn(Credentials.anonymous());
-          const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
-          const collections = mongoClient
-            .db("href-social-db")
-            .collection("href-social-collection");
-          const username = location.pathname.split("/")[2];
-
-          const dataByUserName = await collections.findOne({
-            username: `${username}`,
-          });
-          return dataByUserName;
-        }
-
-        const dataObj = fetchData();
-        for (let key in dataObj) {
-          setValue(key, DATA_FROM_STATE[key]);
-        }
+      for (let key in DATA_FROM_STATE) {
+        setValue(key, DATA_FROM_STATE[key]);
       }
+
+      // async function fetchData() {
+      //   const app = new App({ id: "href-social-qmufp" });
+      //   await app.logIn(Credentials.anonymous());
+      //   const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+      //   const collections = mongoClient
+      //     .db("href-social-db")
+      //     .collection("href-social-collection");
+      //   const username = location.pathname.split("/")[2];
+      //   const dataByUserName = await collections.findOne({
+      //     username: `${username}`,
+      //   });
+      //   return dataByUserName;
+      // }
+      // const dataObj = fetchData();
+      // for (let key in dataObj) {
+      //   setValue(key, DATA_FROM_STATE[key]);
+      // }
     }
   }, [DATA_FROM_STATE, setValue, location]);
 
@@ -260,15 +264,28 @@ export default function Form() {
               >
                 Photo
               </label>
-              <input
-                type="file"
-                id="photo"
-                {...register("photo", {
-                  required: "Photo is required",
-                  validate: validateFileExtension,
-                })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
+              {location.pathname.includes("/edit") && deleteBtn ? (
+                <div className="flex flex-row items-center space-x-7 justify-start">
+                  <span>{DATA_FROM_STATE.photo}</span>
+                  <button
+                    className="text-white bg-red-600 hover:bg-red-700 rounded-lg text-sm w-20 h-8"
+                    type="button"
+                    onClick={() => setDeleteBtn(false)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ) : (
+                <input
+                  type="file"
+                  id="photo"
+                  {...register("photo", {
+                    required: "Photo is required",
+                    validate: validateFileExtension,
+                  })}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+              )}
               {errors.photo && (
                 <p className="text-red-600">{errors.photo.message}</p>
               )}

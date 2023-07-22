@@ -39,6 +39,7 @@ export default function Profile() {
         setLoading(false);
         const { _id, ...updatedDataByUsername } = dataByUserName;
         dispatch(STORE_DATA_IN_STATE(updatedDataByUsername));
+        console.log(updatedDataByUsername);
         dispatch(
           STORE_TOTAL_CUSTOM_LINKS(updatedDataByUsername.totalCustomLinks)
         );
