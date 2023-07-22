@@ -7,16 +7,16 @@ const DialogBox = () => {
   const [modal, setModal] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const storedData = useSelector((state) => state.data.storedData);
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
 
   const goToMyProfile = () => {
-    navigate(`/${storedData.username}`);
+    navigate(`/${DATA_FROM_STATE.username}`);
   };
 
   const handlOkGotItClick = () => {
     setModal(false);
     if (location.pathname === "/preview") {
-      navigate(`/${storedData.username}`);
+      navigate(`/${DATA_FROM_STATE.username}`);
     }
   };
 
@@ -32,7 +32,7 @@ const DialogBox = () => {
                     Congratulations!
                   </h3>
                   <h5 className="text-sm mt-1 text-gray-500 font=semibold">
-                    Now, you have all your social the links at one place.
+                    Now, you have all your social links at one place.
                   </h5>
                 </div>
                 <div className="relative p-6 flex-auto">

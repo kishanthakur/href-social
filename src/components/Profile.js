@@ -1,17 +1,56 @@
-import { React, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { App, Credentials } from "realm-web";
 import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
+import Loading from "./Loading";
+import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
+import { useDispatch } from "react-redux";
 
 export default function Profile() {
-  const storedData = useSelector((state) => state.data.storedData);
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const location = useLocation();
   const colorbg = "bg-yellow-600";
   const colorText = "text-yellow-100";
+  const [profileData, setProfileData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (DATA_FROM_STATE.name) {
+      console.log("inside if");
+      setProfileData(DATA_FROM_STATE);
+      setLoading(false);
+    } else {
+      async function fetchData() {
+        const app = new App({ id: "href-social-qmufp" });
+        await app.logIn(Credentials.anonymous());
+        const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+        const collections = mongoClient
+          .db("href-social-db")
+          .collection("href-social-collection");
+        const username = location.pathname.split("/")[1];
+
+        const dataByUserName = await collections.findOne({
+          username: `${username}`,
+        });
+
+        setProfileData(dataByUserName);
+        setLoading(false);
+        const { _id, ...updatedDataByUsername } = dataByUserName;
+        dispatch(STORE_DATA_IN_STATE(updatedDataByUsername));
+        console.log(updatedDataByUsername);
+        dispatch(
+          STORE_TOTAL_CUSTOM_LINKS(updatedDataByUsername.totalCustomLinks)
+        );
+      }
+      fetchData();
+    }
+  }, [DATA_FROM_STATE, dispatch, location.pathname]);
 
   const navigate = useNavigate();
 
-  const newStoredData = { ...storedData };
+  const newStoredData = { ...profileData };
   const links = Object.fromEntries(
     Object.entries(newStoredData).filter(([key, value]) => {
       return (
@@ -20,16 +59,18 @@ export default function Profile() {
         key !== "username" &&
         key !== "description" &&
         key !== "bgcolor" &&
-        key !== "photo"
+        key !== "photo" &&
+        key !== "_id" &&
+        key !== "totalCustomLinks"
       );
     })
   );
 
   useEffect(() => {
-    if (!storedData.name) {
-      navigate("/");
+    if (location.pathname === "/preview") {
+      if (!DATA_FROM_STATE.name) navigate("/");
     }
-  }, [storedData.name, navigate]);
+  }, [DATA_FROM_STATE, navigate, location]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -62,40 +103,48 @@ export default function Profile() {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center ">
-        <img
-          className="rounded-full w-32 h-32 mt-24"
-          src="/Kishan-pp.png"
-          alt="Profile"
-        />
-        <p className="mt-5 mb-0 font-semibold text-xl text-center w-3/4 ">
-          {storedData.name}
-        </p>
-        <p className="mt-3 mb-2 line-clamp-5 italic font-mono text-lg text-center w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4  ">
-          {storedData.description}
-        </p>
-      </div>
-      {Object.entries(newLinks).map(([key, value], index) => {
-        return (
-          <div key={index} className="flex flex-wrap justify-center mt-3.5">
-            <a
-              href={value}
-              target="_blank"
-              rel="noreferrer"
-              className="w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/3 xl:w-1/3"
-            >
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className="flex flex-col justify-center items-center ">
+          <img
+            className="rounded-full w-32 h-32 mt-24"
+            src="/Kishan-pp.png"
+            alt="Profile"
+          />
+          <p className="mt-5 mb-0 font-semibold text-xl text-center w-3/4 ">
+            {profileData.name}
+          </p>
+          <p className="mt-3 mb-2 line-clamp-5 italic font-mono text-lg text-center w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4  ">
+            {profileData.description}
+          </p>
+
+          {Object.entries(newLinks).map(([key, value], index) => {
+            return (
               <div
-                className={`${colorbg} ${colorText}  text-center font-bold p-4 rounded`}
+                key={index}
+                className="flex flex-wrap justify-center w-full mt-0.5 mb-3.5"
               >
-                <div className="flex items-center space-x-2 justify-center">
-                  <i className={iconExists(key)}></i>
-                  <p>{key}</p>
-                </div>
+                <a
+                  href={value}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-3/4 sm:w-1/2 md:w-1/3 lg:w-1/3 xl:w-1/3"
+                >
+                  <div
+                    className={`${colorbg} ${colorText} text-center font-bold p-4 rounded`}
+                  >
+                    <div className="flex items-center space-x-2 justify-center">
+                      <i className={iconExists(key)}></i>
+                      <p>{key}</p>
+                    </div>
+                  </div>
+                </a>
               </div>
-            </a>
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

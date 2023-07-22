@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { storeData } from "../Reducers";
 import "tailwindcss/tailwind.css";
 import DialogBox from "./DialogBox";
+import { App, Credentials } from "realm-web";
+import { useSelector } from "react-redux";
+import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
 
 export default function Form() {
   const {
@@ -13,15 +15,23 @@ export default function Form() {
     reset,
     watch,
     getValues,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: "onChange" });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
-  const [customLink, setCustomLink] = useState([]);
+  const app = new App({ id: "href-social-qmufp" });
+
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const CUSTOM_LINKS = useSelector((state) => state.DATA.TOTAL_CUSTOM_LINKS);
+
+  const [customLink, setCustomLink] = useState(CUSTOM_LINKS);
   const [showModal, setShowModal] = useState();
   const [submit, setSubmit] = useState(false);
+  const [deleteBtn, setDeleteBtn] = useState(true);
 
   const dispatchData = () => {
     const data = getValues();
@@ -31,16 +41,44 @@ export default function Form() {
       ...newDataWithOutPhoto,
       photo: fileList,
     };
-    dispatch(storeData(newDataWithPhoto));
+    dispatch(STORE_DATA_IN_STATE(newDataWithPhoto));
+    dispatch(STORE_TOTAL_CUSTOM_LINKS(customLink));
     reset();
   };
 
-  const onSubmit = () => {
-    dispatchData();
+  const connectToDatabase = async () => {
+    await app.logIn(Credentials.anonymous());
+    const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+    const collection = mongoClient
+      .db("href-social-db")
+      .collection("href-social-collection");
+    return collection;
+  };
+
+  useEffect(() => {
+    if (location.pathname.includes("/edit")) {
+      if (!DATA_FROM_STATE.name) navigate("/");
+    }
+  }, [DATA_FROM_STATE, navigate, location]);
+
+  const onSubmit = async (data) => {
+    const { photo, ...newDataWithOutPhoto } = data;
+    const fileList = data.photo[0].name;
+    const updatedData = {
+      ...newDataWithOutPhoto,
+      photo: fileList,
+      totalCustomLinks: customLink,
+    };
+    // const updatedData = { ...data, totalCustomLinks: customLink };
     if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
       setShowModal(true);
     }
+    dispatchData();
+
+    const collections = await connectToDatabase();
+
+    await collections.insertOne(updatedData);
   };
 
   const addCustomLinkTextBox = () => {
@@ -62,12 +100,68 @@ export default function Form() {
     }
   };
 
+  const [checkUsername, setCheckUsername] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(false);
+
+  const validateUsername = async () => {
+    if (!location.pathname.includes("/edit") && !submit) {
+      setCheckUsername(true);
+      setUsernameAvailable(false);
+      const username = watch("username");
+      const collections = await connectToDatabase();
+      const usernameAvailable = await collections.findOne({
+        username: `${username}`,
+      });
+      //console.log(usernameAvailable.name);
+      if (usernameAvailable !== null) {
+        setCheckUsername(false);
+        setUsernameAvailable(false);
+        return "Username already taken";
+      } else {
+        setCheckUsername(false);
+        setUsernameAvailable(true);
+      }
+    }
+  };
+
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       setShowModal(false);
       setSubmit(false);
     }
   }, [errors]);
+
+  const handleSubmitClick = (e) => {
+    setSubmit(true);
+    console.log(e.target.value);
+  };
+
+  useEffect(() => {
+    console.log("Redux : " + DATA_FROM_STATE.photo);
+    if (location.pathname !== "/") {
+      for (let key in DATA_FROM_STATE) {
+        setValue(key, DATA_FROM_STATE[key]);
+      }
+
+      // async function fetchData() {
+      //   const app = new App({ id: "href-social-qmufp" });
+      //   await app.logIn(Credentials.anonymous());
+      //   const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+      //   const collections = mongoClient
+      //     .db("href-social-db")
+      //     .collection("href-social-collection");
+      //   const username = location.pathname.split("/")[2];
+      //   const dataByUserName = await collections.findOne({
+      //     username: `${username}`,
+      //   });
+      //   return dataByUserName;
+      // }
+      // const dataObj = fetchData();
+      // for (let key in dataObj) {
+      //   setValue(key, DATA_FROM_STATE[key]);
+      // }
+    }
+  }, [DATA_FROM_STATE, setValue, location]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -108,12 +202,31 @@ export default function Form() {
                 id="username"
                 {...register("username", {
                   required: "Username is required",
+                  validate: validateUsername,
                 })}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="kishathakur"
               />
-              {errors.username && (
-                <p className="text-red-600">{errors.username.message}</p>
+              {errors.username &&
+                checkUsername === false &&
+                usernameAvailable === false && (
+                  <p className="text-red-600 font-semibold mt-1">
+                    {errors.username.message}
+                  </p>
+                )}
+              {checkUsername && usernameAvailable === false && (
+                <>
+                  <div className="mt-2 flex justify-start mt-1 space-x-1">
+                    <div className="animate-spin border-t-2 border-b-2 border-blue-500 w-5 h-5 rounded-full"></div>
+                    <p className="font-semibold"> Checking the Username</p>
+                  </div>
+                </>
+              )}
+
+              {usernameAvailable && (
+                <p className="text-green-600 font-semibold mt-1">
+                  Username available
+                </p>
               )}
             </div>
           </div>
@@ -151,15 +264,28 @@ export default function Form() {
               >
                 Photo
               </label>
-              <input
-                type="file"
-                id="photo"
-                {...register("photo", {
-                  required: "Photo is required",
-                  validate: validateFileExtension,
-                })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
+              {location.pathname.includes("/edit") && deleteBtn ? (
+                <div className="flex flex-row items-center space-x-7 justify-start">
+                  <span>{DATA_FROM_STATE.photo}</span>
+                  <button
+                    className="text-white bg-red-600 hover:bg-red-700 rounded-lg text-sm w-20 h-8"
+                    type="button"
+                    onClick={() => setDeleteBtn(false)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ) : (
+                <input
+                  type="file"
+                  id="photo"
+                  {...register("photo", {
+                    required: "Photo is required",
+                    validate: validateFileExtension,
+                  })}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-black dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+              )}
               {errors.photo && (
                 <p className="text-red-600">{errors.photo.message}</p>
               )}
@@ -346,20 +472,26 @@ export default function Form() {
         </div>
       </div> */}
         <div className="flex justify-center -mt-2 mb-10 ml-12 mr-12">
+          {location.pathname === "/" ? (
+            <button
+              type="submit"
+              onClick={() => setSubmit(false)}
+              value="Preview"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
+            >
+              Preview
+            </button>
+          ) : null}
+
           <button
             type="submit"
-            onClick={() => setSubmit(false)}
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
-          >
-            Preview
-          </button>
-          <button
-            type="submit"
-            onClick={() => setSubmit(true)}
+            onClick={handleSubmitClick}
+            value={location.pathname.includes("/edit") ? "Update" : "Submit"}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
-            Submit
+            {location.pathname.includes("/edit") ? "Update" : "Submit"}
           </button>
+
           {showModal && submit && Object.keys(errors).length === 0 && (
             <DialogBox />
           )}
