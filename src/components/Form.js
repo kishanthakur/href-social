@@ -7,7 +7,6 @@ import DialogBox from "./DialogBox";
 import { App, Credentials } from "realm-web";
 import { useSelector } from "react-redux";
 import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
-import Loading from "./Loading";
 
 export default function Form() {
   const {
@@ -61,10 +60,7 @@ export default function Form() {
     }
   }, [DATA_FROM_STATE, navigate, location]);
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const onSubmit = async (data) => {
-    setIsLoading(true);
     const updatedData = { ...data, totalCustomLinks: customLink };
     if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
@@ -75,7 +71,6 @@ export default function Form() {
     const collections = await connectToDatabase();
 
     await collections.insertOne(updatedData);
-    setIsLoading(false);
   };
 
   const addCustomLinkTextBox = () => {
@@ -477,7 +472,6 @@ export default function Form() {
             value={location.pathname.includes("/edit") ? "Update" : "Submit"}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
-            {isLoading ? <Loading /> : null}
             {location.pathname.includes("/edit") ? "Update" : "Submit"}
           </button>
 
