@@ -84,15 +84,25 @@ export default function Form() {
     }
   };
 
+  const [checkUsername, setCheckUsername] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(false);
+
   const validateUsername = async () => {
     if (!location.pathname.includes("/edit")) {
+      setCheckUsername(true);
+      setUsernameAvailable(false);
       const username = watch("username");
       const collections = await connectToDatabase();
       const usernameAvailable = await collections.findOne({
         username: `${username}`,
       });
       //console.log(usernameAvailable.name);
-      if (usernameAvailable !== null) return "Username already taken";
+      if (usernameAvailable !== null) {
+        setCheckUsername(false);
+        return "Username already taken";
+      } else {
+        setUsernameAvailable(true);
+      }
     }
   };
 
@@ -183,8 +193,16 @@ export default function Form() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="kishathakur"
               />
-              {errors.username && (
-                <p className="text-red-600">{errors.username.message}</p>
+              {errors.username && checkUsername === false && (
+                <p className="text-red-600 bold mt-1">
+                  {errors.username.message}
+                </p>
+              )}
+              {checkUsername && usernameAvailable === false && (
+                <p className="bold mt-1">Checking Username...</p>
+              )}
+              {usernameAvailable && (
+                <p className="text-green-600 bold mt-1">Username available</p>
               )}
             </div>
           </div>
