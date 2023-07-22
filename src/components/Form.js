@@ -6,6 +6,7 @@ import { storeData } from "../Reducers";
 import "tailwindcss/tailwind.css";
 import DialogBox from "./DialogBox";
 import { App, Credentials } from "realm-web";
+import { useSelector } from "react-redux";
 
 export default function Form() {
   const {
@@ -14,6 +15,7 @@ export default function Form() {
     reset,
     watch,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm({ mode: "onChange" });
 
@@ -23,13 +25,14 @@ export default function Form() {
 
   const app = new App({ id: "href-social-qmufp" });
 
+  const storedData = useSelector((state) => state.data.storedData);
+
   const [customLink, setCustomLink] = useState([]);
   const [showModal, setShowModal] = useState();
   const [submit, setSubmit] = useState(false);
 
   const dispatchData = () => {
     const data = getValues();
-
     const { photo, ...newDataWithOutPhoto } = data;
     const fileList = data.photo[0].name;
     const newDataWithPhoto = {
@@ -50,6 +53,7 @@ export default function Form() {
   };
 
   const onSubmit = async (data) => {
+    console.log(data);
     if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
       setShowModal(true);
@@ -81,13 +85,15 @@ export default function Form() {
   };
 
   const validateUsername = async () => {
-    const username = watch("username");
-    const collections = await connectToDatabase();
-    const usernameAvailable = await collections.findOne({
-      username: `${username}`,
-    });
-    //console.log(usernameAvailable);
-    if (usernameAvailable !== null) return "Username already taken";
+    if (!location.pathname.includes("/edit")) {
+      const username = watch("username");
+      const collections = await connectToDatabase();
+      const usernameAvailable = await collections.findOne({
+        username: `${username}`,
+      });
+      //console.log(usernameAvailable.name);
+      if (usernameAvailable !== null) return "Username already taken";
+    }
   };
 
   useEffect(() => {
@@ -101,6 +107,37 @@ export default function Form() {
     setSubmit(true);
     console.log(e.target.value);
   };
+
+  useEffect(() => {
+    //console.log("Redux : " + storedData);
+    if (location.pathname !== "/") {
+      if (storedData.name) {
+        for (let key in storedData) {
+          setValue(key, storedData[key]);
+        }
+      } else {
+        async function fetchData() {
+          const app = new App({ id: "href-social-qmufp" });
+          await app.logIn(Credentials.anonymous());
+          const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+          const collections = mongoClient
+            .db("href-social-db")
+            .collection("href-social-collection");
+          const username = location.pathname.split("/")[2];
+
+          const dataByUserName = await collections.findOne({
+            username: `${username}`,
+          });
+          return dataByUserName;
+        }
+
+        const dataObj = fetchData();
+        for (let key in dataObj) {
+          setValue(key, storedData[key]);
+        }
+      }
+    }
+  }, [storedData, setValue, location]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
