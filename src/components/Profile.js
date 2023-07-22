@@ -96,7 +96,7 @@ export default function Profile() {
       {loading ? (
         <Loading />
       ) : (
-        <div className="flex flex-col justify-center items-center mb-9 ">
+        <div className="flex flex-col justify-center items-center ">
           <img
             className="rounded-full w-32 h-32 mt-24"
             src="/Kishan-pp.png"
@@ -113,7 +113,7 @@ export default function Profile() {
             return (
               <div
                 key={index}
-                className="flex flex-wrap justify-center w-full mt-3.5"
+                className="flex flex-wrap justify-center w-full mt-0.5 mb-3.5"
               >
                 <a
                   href={value}
