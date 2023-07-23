@@ -2,6 +2,7 @@
 name: Push to S3
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -15,6 +16,8 @@ jobs:
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.7.0
+        with: 
+          node-version: 18.12.0
 
       - name: Install dependencies
         run: npm ci
@@ -44,4 +47,4 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-      - run: aws s3 sync ../build/* s3://sdoj-main-ui
+      - run: aws s3 sync ../build/ s3://href-social
