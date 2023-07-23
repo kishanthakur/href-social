@@ -40,6 +40,7 @@ export default function Form() {
     const newDataWithPhoto = {
       ...newDataWithOutPhoto,
       photo: fileList,
+      totalCustomLinks: customLink,
     };
     dispatch(STORE_DATA_IN_STATE(newDataWithPhoto));
     dispatch(STORE_TOTAL_CUSTOM_LINKS(customLink));
@@ -61,24 +62,12 @@ export default function Form() {
     }
   }, [DATA_FROM_STATE, navigate, location]);
 
-  const onSubmit = async (data) => {
-    const { photo, ...newDataWithOutPhoto } = data;
-    const fileList = data.photo[0].name;
-    const updatedData = {
-      ...newDataWithOutPhoto,
-      photo: fileList,
-      totalCustomLinks: customLink,
-    };
-    // const updatedData = { ...data, totalCustomLinks: customLink };
+  const onSubmit = () => {
     if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
     else {
       setShowModal(true);
     }
     dispatchData();
-
-    const collections = await connectToDatabase();
-
-    await collections.insertOne(updatedData);
   };
 
   const addCustomLinkTextBox = () => {
@@ -472,16 +461,14 @@ export default function Form() {
         </div>
       </div> */}
         <div className="flex justify-center -mt-2 mb-10 ml-12 mr-12">
-          {location.pathname === "/" ? (
-            <button
-              type="submit"
-              onClick={() => setSubmit(false)}
-              value="Preview"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
-            >
-              Preview
-            </button>
-          ) : null}
+          <button
+            type="submit"
+            onClick={() => setSubmit(false)}
+            value={location.pathname.includes("/edit") ? "Cancel" : "Preview"}
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
+          >
+            {location.pathname.includes("/edit") ? "Cancel" : "Preview"}
+          </button>
 
           <button
             type="submit"

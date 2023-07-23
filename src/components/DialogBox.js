@@ -2,12 +2,21 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { useHmac } from "react-hash";
+import { App, Credentials } from "realm-web";
 
 const DialogBox = () => {
   const [modal, setModal] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const [submit, setSubmit] = useState(true);
+  const [securityQ, setSecurityQ] = useState("");
+  const [error, setError] = useState(false);
+
+  const app = new App({ id: "href-social-qmufp" });
+
+  const [hmac, setHmacAlgo, setHmacMessage, setHmacSecret] = useHmac();
 
   const goToMyProfile = () => {
     navigate(`/${DATA_FROM_STATE.username}`);
@@ -17,6 +26,41 @@ const DialogBox = () => {
     setModal(false);
     if (location.pathname === "/preview") {
       navigate(`/${DATA_FROM_STATE.username}`);
+    }
+  };
+
+  const connectToDatabase = async () => {
+    await app.logIn(Credentials.anonymous());
+    const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+    const collection = mongoClient
+      .db("href-social-db")
+      .collection("href-social-collection");
+    return collection;
+  };
+
+  const handleSubmit = async () => {
+    setModal(true);
+    if (securityQ === "") {
+      setError(true);
+    } else {
+      setError(false);
+      setSubmit(false);
+      setHmacAlgo("HmacMD5");
+      setHmacMessage(`/${DATA_FROM_STATE.username}`);
+      console.log("sec : " + securityQ);
+      setHmacSecret(securityQ);
+
+      // console.log(securityQ);
+      console.log(`${hmac}`);
+      const updatedData = {
+        ...DATA_FROM_STATE,
+        securityKey: { hmac },
+        securityQuestion: securityQ,
+      };
+      const collections = await connectToDatabase();
+
+      await collections.insertOne(updatedData);
+      console.log(updatedData);
     }
   };
 
@@ -35,27 +79,60 @@ const DialogBox = () => {
                     Now, you have all your social links at one place.
                   </h5>
                 </div>
-                <div className="relative p-6 flex-auto">
-                  <p className="line-clamp-2">
-                    12d7d6f9dc80359d60f1cdbae4502535
-                  </p>
+                <div className="relative p-5 flex-auto">
+                  {submit ? (
+                    <>
+                      <p className="text-gray-600 mb-4">
+                        *Enter the security question to generate your security
+                        key. Make sure you remember this question, this will
+                        help restore the key if forgotten*
+                      </p>
+                      <input
+                        type="text"
+                        value={securityQ}
+                        placeholder="Enter your security question"
+                        className="w-full p-2 border rounded"
+                        onChange={(e) => setSecurityQ(e.target.value)}
+                      />
+                      {error && (
+                        <p className="text-red-600 mt-1">
+                          Please enter security question
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="mb-0">{hmac}</p>
+                  )}
                 </div>
-                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
-                  <button
-                    className="text-white bg-blue-500 active:bg-blue-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                    type="button"
-                    onClick={handlOkGotItClick}
-                  >
-                    ok, Got it
-                  </button>
+                <div className="flex items-center justify-end p-3 border-t border-solid border-blueGray-200 rounded-b">
+                  {submit &&
+                  securityQ &&
+                  location.pathname.includes("/preview") ? (
+                    <button
+                      className="text-white bg-blue-500 active:bg-blue-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      type="button"
+                      onClick={handlOkGotItClick}
+                    >
+                      ok, Got it
+                    </button>
+                  ) : null}
 
-                  {location.pathname !== "/preview" ? (
+                  {location.pathname !== "/preview" && !submit ? (
                     <button
                       className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                       type="button"
                       onClick={goToMyProfile}
                     >
                       Go to my Profile
+                    </button>
+                  ) : null}
+                  {submit ? (
+                    <button
+                      className="text-white bg-green-600 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      type="button"
+                      onClick={handleSubmit}
+                    >
+                      Submit
                     </button>
                   ) : null}
                 </div>
