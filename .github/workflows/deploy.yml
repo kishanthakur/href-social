@@ -23,8 +23,7 @@ jobs:
         run: npm ci
 
       - name: Build the site
-        run: | 
-          pwd
+        run: |
           npm run build
 
       - name: HashiCorp - Setup Terraform
@@ -49,7 +48,5 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-      - run: | 
-          pwd
-          ls ..
-          aws s3 sync ../build/ s3://href-social
+      - run: 
+          aws s3 sync ./build/ s3://href-social
