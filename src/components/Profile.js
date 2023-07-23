@@ -4,11 +4,16 @@ import { App, Credentials } from "realm-web";
 import { useSelector } from "react-redux";
 import "tailwindcss/tailwind.css";
 import Loading from "./Loading";
-import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
+import {
+  STORE_DATA_IN_STATE,
+  STORE_TOTAL_CUSTOM_LINKS,
+  STORE_EDIT_PROFILE_FLAG,
+} from "../Reducers";
 import { useDispatch } from "react-redux";
 
 export default function Profile() {
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  //const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
   const location = useLocation();
   const colorbg = "bg-yellow-600";
   const colorText = "text-yellow-100";
@@ -22,6 +27,7 @@ export default function Profile() {
       console.log("inside if");
       setProfileData(DATA_FROM_STATE);
       setLoading(false);
+      dispatch(STORE_EDIT_PROFILE_FLAG(true));
     } else {
       async function fetchData() {
         const app = new App({ id: "href-social-qmufp" });
@@ -41,6 +47,7 @@ export default function Profile() {
         } else {
           setProfileData(dataByUserName);
           setLoading(false);
+          dispatch(STORE_EDIT_PROFILE_FLAG(true));
           const { _id, ...updatedDataByUsername } = dataByUserName;
           dispatch(STORE_DATA_IN_STATE(updatedDataByUsername));
           console.log(updatedDataByUsername);

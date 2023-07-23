@@ -7,6 +7,8 @@ export default function Headers() {
   const param = useLocation();
   const navigate = useNavigate();
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
+
   const [showModal, setShowModal] = useState(false);
   console.log(param);
 
@@ -23,7 +25,8 @@ export default function Headers() {
           <div className="space-x-2 mr-2">
             {param.pathname !== "/" &&
             !param.pathname.includes("/edit") &&
-            !param.pathname.includes("/error") ? (
+            !param.pathname.includes("/error") &&
+            EDIT_PROFILE === true ? (
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded"
                 onClick={() => navigate(`/edit/${DATA_FROM_STATE.username}`)}
