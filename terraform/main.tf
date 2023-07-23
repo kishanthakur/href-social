@@ -5,6 +5,11 @@ terraform {
       version = "5.0.1"
     }
   }
+
+  backend "s3" {
+    bucket = "terraform-state-store-s3"
+    key    = "href-social/terraform.tfstate"
+  }
 }
 
 provider "aws" {
@@ -20,7 +25,6 @@ resource "aws_s3_bucket" "website_bucket" {
 
   force_destroy = true
 }
-
 
 resource "aws_s3_bucket_website_configuration" "website_bucket_web_config" {
   bucket = aws_s3_bucket.website_bucket.id
