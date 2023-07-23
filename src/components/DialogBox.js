@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -14,8 +14,6 @@ const DialogBox = () => {
   const [securityQ, setSecurityQ] = useState("");
   const [error, setError] = useState(false);
 
-  const app = new App({ id: "href-social-qmufp" });
-
   const [hmac, setHmacAlgo, setHmacMessage, setHmacSecret] = useHmac();
 
   const goToMyProfile = () => {
@@ -29,15 +27,6 @@ const DialogBox = () => {
     }
   };
 
-  const connectToDatabase = async () => {
-    await app.logIn(Credentials.anonymous());
-    const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
-    const collection = mongoClient
-      .db("href-social-db")
-      .collection("href-social-collection");
-    return collection;
-  };
-
   const handleSubmit = async () => {
     setModal(true);
     if (securityQ === "") {
@@ -48,21 +37,43 @@ const DialogBox = () => {
       setHmacAlgo("HmacMD5");
       setHmacMessage(`/${DATA_FROM_STATE.username}`);
       console.log("sec : " + securityQ);
-      setHmacSecret(securityQ);
 
       // console.log(securityQ);
-      console.log(`${hmac}`);
-      const updatedData = {
-        ...DATA_FROM_STATE,
-        securityKey: { hmac },
-        securityQuestion: securityQ,
-      };
-      const collections = await connectToDatabase();
-
-      await collections.insertOne(updatedData);
-      console.log(updatedData);
     }
   };
+
+  const [data, setData] = useState(false);
+
+  useEffect(() => {
+    setHmacSecret(securityQ);
+    if (hmac && securityQ.length > 0 && !submit) {
+      setData(true);
+    }
+  }, [hmac, securityQ, setHmacSecret, submit]);
+
+  useEffect(() => {
+    async function storeData() {
+      if (data) {
+        console.log(hmac);
+        const updatedData = {
+          ...DATA_FROM_STATE,
+          securityKey: { hmac },
+          securityQuestion: securityQ,
+        };
+
+        const app = new App({ id: "href-social-qmufp" });
+        await app.logIn(Credentials.anonymous());
+        const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+        const collection = mongoClient
+          .db("href-social-db")
+          .collection("href-social-collection");
+
+        await collection.insertOne(updatedData);
+        console.log(updatedData);
+      }
+    }
+    storeData();
+  }, [DATA_FROM_STATE, data, hmac, securityQ]);
 
   return (
     <>
