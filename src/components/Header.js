@@ -21,7 +21,9 @@ export default function Headers() {
           />
 
           <div className="space-x-2 mr-2">
-            {param.pathname !== "/" && !param.pathname.includes("/edit") ? (
+            {param.pathname !== "/" &&
+            !param.pathname.includes("/edit") &&
+            !param.pathname.includes("/error") ? (
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded"
                 onClick={() => navigate(`/edit/${DATA_FROM_STATE.username}`)}

@@ -14,6 +14,7 @@ export default function Profile() {
   const colorText = "text-yellow-100";
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [errorPage, setErrorPage] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,14 +36,18 @@ export default function Profile() {
           username: `${username}`,
         });
 
-        setProfileData(dataByUserName);
-        setLoading(false);
-        const { _id, ...updatedDataByUsername } = dataByUserName;
-        dispatch(STORE_DATA_IN_STATE(updatedDataByUsername));
-        console.log(updatedDataByUsername);
-        dispatch(
-          STORE_TOTAL_CUSTOM_LINKS(updatedDataByUsername.totalCustomLinks)
-        );
+        if (dataByUserName === null) {
+          setErrorPage(true);
+        } else {
+          setProfileData(dataByUserName);
+          setLoading(false);
+          const { _id, ...updatedDataByUsername } = dataByUserName;
+          dispatch(STORE_DATA_IN_STATE(updatedDataByUsername));
+          console.log(updatedDataByUsername);
+          dispatch(
+            STORE_TOTAL_CUSTOM_LINKS(updatedDataByUsername.totalCustomLinks)
+          );
+        }
       }
       fetchData();
     }
@@ -71,6 +76,12 @@ export default function Profile() {
       if (!DATA_FROM_STATE.name) navigate("/");
     }
   }, [DATA_FROM_STATE, navigate, location]);
+
+  useEffect(() => {
+    if (errorPage) {
+      navigate("/error");
+    }
+  }, [errorPage, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

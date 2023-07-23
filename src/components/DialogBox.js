@@ -37,7 +37,7 @@ const DialogBox = () => {
                 </div>
                 <div className="relative p-6 flex-auto">
                   <p className="line-clamp-2">
-                    gggggggggggggggggggggggggggggggggggggggggggggggggggggggg1
+                    12d7d6f9dc80359d60f1cdbae4502535
                   </p>
                 </div>
                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
