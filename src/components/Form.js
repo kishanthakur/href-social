@@ -63,10 +63,12 @@ export default function Form() {
   }, [DATA_FROM_STATE, navigate, location]);
 
   const onSubmit = () => {
-    if (Object.keys(errors).length === 0 && !submit) navigate("/preview");
-    else {
+    if (Object.keys(errors).length === 0 && !submit) {
+      navigate("/preview");
+    } else {
       setShowModal(true);
     }
+
     dispatchData();
   };
 
@@ -93,14 +95,16 @@ export default function Form() {
   const [usernameAvailable, setUsernameAvailable] = useState(false);
 
   const validateUsername = async () => {
-    if (!location.pathname.includes("/edit") && !submit) {
+    if (!location.pathname.includes("/edit") && !usernameAvailable) {
       setCheckUsername(true);
       setUsernameAvailable(false);
       const username = watch("username");
+
       const collections = await connectToDatabase();
       const usernameAvailable = await collections.findOne({
         username: `${username}`,
       });
+
       //console.log(usernameAvailable.name);
       if (usernameAvailable !== null) {
         setCheckUsername(false);
@@ -122,7 +126,15 @@ export default function Form() {
 
   const handleSubmitClick = (e) => {
     setSubmit(true);
+    //setPreview(false);
     console.log(e.target.value);
+  };
+
+  //  const [preview, setPreview] = useState(false);
+
+  const handlePreviewClick = () => {
+    setSubmit(false);
+    //setPreview(true);
   };
 
   useEffect(() => {
@@ -463,7 +475,7 @@ export default function Form() {
         <div className="flex justify-center -mt-2 mb-10 ml-12 mr-12">
           <button
             type="submit"
-            onClick={() => setSubmit(false)}
+            onClick={handlePreviewClick}
             value={location.pathname.includes("/edit") ? "Cancel" : "Preview"}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg mr-5 text-sm w-60 sm:w-auto px-5 py-2.5 text-center "
           >
