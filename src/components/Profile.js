@@ -8,6 +8,7 @@ import {
   STORE_DATA_IN_STATE,
   STORE_TOTAL_CUSTOM_LINKS,
   STORE_EDIT_PROFILE_FLAG,
+  STORE_PREVIEW_FLAG,
 } from "../Reducers";
 import { useDispatch } from "react-redux";
 
@@ -21,6 +22,14 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [errorPage, setErrorPage] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (location.pathname === "/preview") {
+      dispatch(STORE_PREVIEW_FLAG(true));
+    } else {
+      dispatch(STORE_PREVIEW_FLAG(false));
+    }
+  }, [dispatch, location]);
 
   useEffect(() => {
     if (DATA_FROM_STATE.name) {
@@ -73,7 +82,9 @@ export default function Profile() {
         key !== "bgcolor" &&
         key !== "photo" &&
         key !== "_id" &&
-        key !== "totalCustomLinks"
+        key !== "totalCustomLinks" &&
+        key !== "securityKey" &&
+        key !== "securityQuestion"
       );
     })
   );
