@@ -33,7 +33,6 @@ export default function Profile() {
 
   useEffect(() => {
     if (DATA_FROM_STATE.name) {
-      console.log("inside if");
       setProfileData(DATA_FROM_STATE);
       setLoading(false);
       dispatch(STORE_EDIT_PROFILE_FLAG(true));

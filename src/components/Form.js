@@ -53,7 +53,7 @@ export default function Form() {
     };
     dispatch(STORE_DATA_IN_STATE(newDataWithPhoto));
     dispatch(STORE_TOTAL_CUSTOM_LINKS(customLink));
-    console.log(DATA_FROM_STATE);
+    //console.log(DATA_FROM_STATE);
     reset();
   };
 
@@ -86,11 +86,10 @@ export default function Form() {
               key !== "securityKey"
             ) {
               if (DATA_FROM_STATE[key] !== watchInputs[key]) {
-                console.log("inside update");
-                console.log(DATA_FROM_STATE[key] + "===" + watchInputs[key]);
-                console.log("loadinggg 1 ; " + loading);
+                //console.log(DATA_FROM_STATE[key] + "===" + watchInputs[key]);
+                //console.log("loadinggg 1 ; " + loading);
                 setLoading(true);
-                console.log("loadinggg 2 ; " + loading);
+                //console.log("loadinggg 2 ; " + loading);
                 const app = new App({ id: "href-social-qmufp" });
                 await app.logIn(Credentials.anonymous());
                 const mongoClient =
@@ -103,7 +102,7 @@ export default function Form() {
                   { username: DATA_FROM_STATE["username"] },
                   { $set: { [key]: watchInputs[key] } }
                 );
-                console.log("loadinggg 3 ; " + loading);
+                //console.log("loadinggg 3 ; " + loading);
                 setLoading(false);
 
                 navigate(`/${DATA_FROM_STATE.username}`);
@@ -134,8 +133,8 @@ export default function Form() {
           key !== "securityKey"
         ) {
           if (DATA_FROM_STATE[key] !== watchInputs[key]) {
-            console.log("inside dataaa");
-            console.log(DATA_FROM_STATE[key] + "===" + watchInputs[key]);
+            //console.log("inside dataaa");
+            //console.log(DATA_FROM_STATE[key] + "===" + watchInputs[key]);
             setHasChanged(true);
             return;
           }
