@@ -4,6 +4,7 @@ const initialState = {
   FORM_DATA: {},
   TOTAL_CUSTOM_LINKS: [],
   EDIT_PROFILE: false,
+  PREVIEW: false,
 };
 
 export const dataSlice = createSlice({
@@ -19,6 +20,9 @@ export const dataSlice = createSlice({
     STORE_EDIT_PROFILE_FLAG: (state, action) => {
       state.EDIT_PROFILE = action.payload;
     },
+    STORE_PREVIEW_FLAG: (state, action) => {
+      state.PREVIEW = action.payload;
+    },
   },
 });
 
@@ -26,6 +30,7 @@ export const {
   STORE_DATA_IN_STATE,
   STORE_TOTAL_CUSTOM_LINKS,
   STORE_EDIT_PROFILE_FLAG,
+  STORE_PREVIEW_FLAG,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

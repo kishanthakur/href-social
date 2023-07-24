@@ -116,8 +116,9 @@ const DialogBox = () => {
                   )}
                 </div>
                 <div className="flex items-center justify-end p-3 border-t border-solid border-blueGray-200 rounded-b">
-                  {submit &&
+                  {!submit &&
                   securityQ &&
+                  hmac &&
                   location.pathname.includes("/preview") ? (
                     <button
                       className="text-white bg-blue-500 active:bg-blue-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"

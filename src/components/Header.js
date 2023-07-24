@@ -10,7 +10,6 @@ export default function Headers() {
   const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
 
   const [showModal, setShowModal] = useState(false);
-  console.log(param);
 
   return (
     <>
