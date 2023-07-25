@@ -96,7 +96,7 @@ export default function Profile() {
   useEffect(() => {
     function displayPhoto(photoKey) {
       setLoading(true);
-      dispatch(STORE_PREVIEW_FLAG(false));
+      dispatch(STORE_EDIT_PROFILE_FLAG(false));
       const albumBucketName = "href-social";
 
       AWS.config.update({
@@ -120,7 +120,7 @@ export default function Profile() {
           const url = URL.createObjectURL(blob);
           setPhotoURL(url);
           setLoading(false);
-          dispatch(STORE_PREVIEW_FLAG(false));
+          dispatch(STORE_EDIT_PROFILE_FLAG(true));
         }
       });
     }
