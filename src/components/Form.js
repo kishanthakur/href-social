@@ -3,7 +3,11 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { App, Credentials } from "realm-web";
-import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
+import {
+  STORE_DATA_IN_STATE,
+  STORE_TOTAL_CUSTOM_LINKS,
+  UPDATE_FORM_DATA,
+} from "../Reducers";
 import AWS from "aws-sdk";
 import Loading from "./Loading";
 import DialogBox from "./DialogBox";
@@ -50,9 +54,11 @@ export default function Form() {
     if (document.getElementById("photo")) {
       console.log("Inside data if");
       fileList = data.photo[0].name;
+      console.log(fileList);
     } else {
       console.log("inside data else");
       fileList = DATA_FROM_STATE.photo;
+      console.log(fileList);
     }
     const newDataWithPhoto = {
       ...newDataWithOutPhoto,
@@ -108,11 +114,20 @@ export default function Form() {
                 const collection = mongoClient
                   .db("href-social-db")
                   .collection("href-social-collection");
-                console.log(key);
-                await collection.updateOne(
-                  { username: DATA_FROM_STATE["username"] },
-                  { $set: { [key]: watchInputs[key] } }
-                );
+                console.log(watchInputs["photo"][0].name);
+                if (key === "photo") {
+                  await collection.updateOne(
+                    { username: DATA_FROM_STATE["username"] },
+                    { $set: { [key]: watchInputs["photo"][0].name } }
+                  );
+                  // const value = watchInputs["photo"][0].name;
+                  // dispatch(UPDATE_FORM_DATA({ key, value }));
+                } else {
+                  await collection.updateOne(
+                    { username: DATA_FROM_STATE["username"] },
+                    { $set: { [key]: watchInputs[key] } }
+                  );
+                }
 
                 setLoading(false);
 

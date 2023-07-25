@@ -31,6 +31,9 @@ export const dataSlice = createSlice({
     STORE_DB_DATA: (state, action) => {
       state.DB_DATA = action.payload;
     },
+    UPDATE_FORM_DATA: (state, action) => {
+      state.FORM_DATA[action.payload.key] = action.payload.value;
+    },
   },
 });
 
@@ -41,6 +44,7 @@ export const {
   STORE_PREVIEW_FLAG,
   STORE_IMAGE_URL,
   STORE_DB_DATA,
+  UPDATE_FORM_DATA,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;
