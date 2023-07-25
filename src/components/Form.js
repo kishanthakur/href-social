@@ -47,7 +47,7 @@ export default function Form() {
     const data = getValues();
     const { link, customName, photo, ...newDataWithOutPhoto } = data;
     let fileList = "";
-    console.log(document.getElementById("photo"));
+
     if (watchInputs["photo"][0].name) {
       console.log("Inside data if");
       fileList = data.photo[0].name;
@@ -92,9 +92,9 @@ export default function Form() {
       } else {
         console.log("hasChanged - " + hasChanged);
         if (hasChanged) {
-          for (let key in DATA_FROM_STATE) {
+          for (let key in watchInputs) {
             if (key !== "securityQuestion" && key !== "securityKey") {
-              if (DATA_FROM_STATE[key] !== watchInputs[key]) {
+              if (watchInputs[key] !== DATA_FROM_STATE[key]) {
                 setLoading(true);
                 console.log(
                   key +
@@ -148,7 +148,7 @@ export default function Form() {
   // when updating the data, it will check if any input is changed
   useEffect(() => {
     if (watchInputs.name) {
-      for (const key in DATA_FROM_STATE) {
+      for (const key in watchInputs) {
         if (key !== "securityQuestion" && key !== "securityKey") {
           if (DATA_FROM_STATE[key] !== watchInputs[key]) {
             setHasChanged(true);
