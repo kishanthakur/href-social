@@ -249,13 +249,13 @@ export default function Form() {
     //const data = getValues();
     //console.log(data);
     if (data.username && data.photo) {
-      const API_KEY = "AKIARAU2UJCVAMRSBUQL"; //process.env.REACT_APP_AWS_APIKEY;
-      const API_SECRET = "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"; //process.env.REACT_APP_AWS_SECRET;
-      const REGION = "us-east-1"; //process.env.REACT_APP_AWS_REGION;
+      // const API_KEY = process.env.REACT_APP_AWS_APIKEY;
+      // const API_SECRET = process.env.REACT_APP_AWS_SECRET;
+      // const REGION = process.env.REACT_APP_AWS_REGION;
       AWS.config.update({
-        accessKeyId: API_KEY,
-        secretAccessKey: API_SECRET,
-        region: REGION,
+        accessKeyId: process.env.REACT_APP_AWS_APIKEY,
+        secretAccessKey: process.env.REACT_APP_AWS_SECRET,
+        region: process.env.REACT_APP_AWS_REGION,
       });
       let albumBucketName = "href-social";
       var files = document.getElementById("photo").files;
