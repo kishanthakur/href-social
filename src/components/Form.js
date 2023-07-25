@@ -8,7 +8,7 @@ import { App, Credentials } from "realm-web";
 import { useSelector } from "react-redux";
 import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
 import AWS from "aws-sdk";
-import Loading from "./Loading";  
+import Loading from "./Loading";
 
 export default function Form() {
   const {
@@ -74,6 +74,7 @@ export default function Form() {
   }, [DATA_FROM_STATE, navigate, location]);
 
   const onSubmit = async (data) => {
+    addPhoto(data);
     if (update) {
       if (PREVIEW) {
         navigate("/preview");
@@ -244,42 +245,57 @@ export default function Form() {
     }
   }, [DATA_FROM_STATE, setValue, location]);
 
-  function addPhoto() {
-    const API_KEY = process.env.REACT_APP_AWS_APIKEY;
-    const API_SECRET = process.env.REACT_APP_AWS_SECRET;
-    const REGION = process.env.REACT_APP_AWS_REGION;
-
-    AWS.config.update({
-      accessKeyId: API_KEY,
-      secretAccessKey: API_SECRET,
-      region: REGION,
-    });
-    let albumBucketName = "href-social";
-    var files = document.getElementById("photo").files;
-    if (!files.length) {
-      return alert("Please choose a file to upload first.");
+  function addPhoto(data) {
+    //const data = getValues();
+    //console.log(data);
+    if (data.username && data.photo) {
+      const API_KEY = process.env.REACT_APP_AWS_APIKEY;
+      const API_SECRET = process.env.REACT_APP_AWS_SECRET;
+      const REGION = process.env.REACT_APP_AWS_REGION;
+      AWS.config.update({
+        accessKeyId: API_KEY,
+        secretAccessKey: API_SECRET,
+        region: REGION,
+      });
+      let albumBucketName = "href-social";
+      var files = document.getElementById("photo").files;
+      console.log(document.getElementById("photo").files);
+      // if (!files.length) {
+      //   return alert("Please choose a file to upload first.");
+      // }
+      var file = files[0];
+      console.log(file);
+      var originalFileName = file.name;
+      var fileExtension = originalFileName.split(".").pop();
+      console.log("1 - " + originalFileName);
+      console.log("2 - " + fileExtension);
+      var newFileName =
+        originalFileName.split(".")[0] +
+        "_" +
+        data.username +
+        "." +
+        fileExtension;
+      // var albumPhotosKey = encodeURIComponent(albumName) + "/";
+      console.log(newFileName);
+      var photoKey = "users/photos/" + newFileName;
+      // Use S3 ManagedUpload class as it supports multipart uploads
+      var upload = new AWS.S3.ManagedUpload({
+        params: {
+          Bucket: albumBucketName,
+          Key: photoKey,
+          Body: file,
+        },
+      });
+      var promise = upload.promise();
+      promise.then(
+        function (data) {
+          alert("Successfully uploaded photo.");
+        },
+        function (err) {
+          return console.log(err.message);
+        }
+      );
     }
-    var file = files[0];
-    var fileName = file.name;
-    // var albumPhotosKey = encodeURIComponent(albumName) + "/";
-    var photoKey = "users/photos/" + fileName;
-    // Use S3 ManagedUpload class as it supports multipart uploads
-    var upload = new AWS.S3.ManagedUpload({
-      params: {
-        Bucket: albumBucketName,
-        Key: photoKey,
-        Body: file,
-      },
-    });
-    var promise = upload.promise();
-    promise.then(
-      function (data) {
-        alert("Successfully uploaded photo.");
-      },
-      function (err) {
-        return alert("There was an error uploading your photo: ", err.message);
-      }
-    );
   }
 
   return (

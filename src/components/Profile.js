@@ -11,6 +11,7 @@ import {
   STORE_PREVIEW_FLAG,
 } from "../Reducers";
 import { useDispatch } from "react-redux";
+import AWS from "aws-sdk";
 
 export default function Profile() {
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
@@ -88,6 +89,62 @@ export default function Profile() {
     })
   );
 
+  const [photoURL, setPhotoURL] = useState(null);
+
+  useEffect(() => {
+    function displayPhoto(photoKey) {
+      console.log("Fetching photo");
+      const starttime = Date.now();
+      const API_KEY = process.env.REACT_APP_AWS_APIKEY;
+      const API_SECRET = process.env.REACT_APP_AWS_SECRET;
+      const REGION = process.env.REACT_APP_AWS_REGION;
+      const albumBucketName = "href-social";
+
+      AWS.config.update({
+        accessKeyId: API_KEY,
+        secretAccessKey: API_SECRET,
+        region: REGION,
+      });
+
+      const s3 = new AWS.S3();
+
+      const params = {
+        Bucket: albumBucketName,
+        Key: photoKey,
+      };
+
+      s3.getObject(params, function (err, data) {
+        if (err) {
+          console.log(err, err.stack); // Handle errors
+        } else {
+          // Convert the fetched data to a blob and create an object URL
+          const blob = new Blob([data.Body], { type: data.ContentType });
+          const url = URL.createObjectURL(blob);
+          setPhotoURL(url);
+          console.log("Photo fetched");
+          const endtime = Date.now();
+          const timetaken = (endtime - starttime) / 1000;
+          console.log("Time taken : " + timetaken);
+
+          // Display the photo in an img tag
+          //const img = document.getElementById("myImage"); // Assuming you have an img tag with id 'myImage'
+          //img.src = url;
+        }
+      });
+    }
+    var fileExtension = DATA_FROM_STATE.photo.split(".").pop();
+    console.log(
+      `users/photos/${DATA_FROM_STATE.photo.split(".")[0]}_${
+        DATA_FROM_STATE.username
+      }.${fileExtension}`
+    );
+    displayPhoto(
+      `users/photos/${DATA_FROM_STATE.photo.split(".")[0]}_${
+        DATA_FROM_STATE.username
+      }.${fileExtension}`
+    );
+  }, [DATA_FROM_STATE]);
+
   useEffect(() => {
     if (location.pathname === "/preview") {
       if (!DATA_FROM_STATE.name) navigate("/");
@@ -136,8 +193,9 @@ export default function Profile() {
       ) : (
         <div className="flex flex-col justify-center items-center ">
           <img
+            id="myImage"
             className="rounded-full w-32 h-32 mt-24"
-            src="/Kishan-pp.png"
+            src={photoURL}
             alt="Profile"
           />
           <p className="mt-5 mb-0 font-semibold text-xl text-center w-3/4 ">
