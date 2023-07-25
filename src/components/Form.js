@@ -249,9 +249,6 @@ export default function Form() {
     //const data = getValues();
     //console.log(data);
     if (data.username && data.photo) {
-      // const API_KEY = process.env.REACT_APP_AWS_APIKEY;
-      // const API_SECRET = process.env.REACT_APP_AWS_SECRET;
-      // const REGION = process.env.REACT_APP_AWS_REGION;
       AWS.config.update({
         accessKeyId: process.env.REACT_APP_AWS_APIKEY,
         secretAccessKey: process.env.REACT_APP_AWS_SECRET,
