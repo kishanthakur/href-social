@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { App, Credentials } from "realm-web";
-import { useSelector } from "react-redux";
-import "tailwindcss/tailwind.css";
+import { useSelector, useDispatch } from "react-redux";
 import Loading from "./Loading";
 import {
   STORE_DATA_IN_STATE,
@@ -10,20 +9,24 @@ import {
   STORE_EDIT_PROFILE_FLAG,
   STORE_PREVIEW_FLAG,
 } from "../Reducers";
-import { useDispatch } from "react-redux";
 import AWS from "aws-sdk";
 
 export default function Profile() {
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
-  //const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
+
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const colorbg = "bg-yellow-600";
   const colorText = "text-yellow-100";
+
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
   const [errorPage, setErrorPage] = useState(false);
-  const dispatch = useDispatch();
+  const [photoURL, setPhotoURL] = useState(null);
 
+  // if the route is of preview, then update the redux store
   useEffect(() => {
     if (location.pathname === "/preview") {
       dispatch(STORE_PREVIEW_FLAG(true));
@@ -32,6 +35,7 @@ export default function Profile() {
     }
   }, [dispatch, location]);
 
+  // if state is available, then use the data from state otherwise fetch the data from db
   useEffect(() => {
     if (DATA_FROM_STATE.name) {
       setProfileData(DATA_FROM_STATE);
@@ -69,8 +73,7 @@ export default function Profile() {
     }
   }, [DATA_FROM_STATE, dispatch, location.pathname]);
 
-  const navigate = useNavigate();
-
+  // create new object with just links
   const newStoredData = { ...profileData };
   const links = Object.fromEntries(
     Object.entries(newStoredData).filter(([key, value]) => {
@@ -89,14 +92,11 @@ export default function Profile() {
     })
   );
 
-  const [photoURL, setPhotoURL] = useState(null);
-
+  // fetch the photo from s3
   useEffect(() => {
     function displayPhoto(photoKey) {
-      console.log("Fetching photo");
       setLoading(true);
-      const starttime = Date.now();
-
+      dispatch(STORE_PREVIEW_FLAG(false));
       const albumBucketName = "href-social";
 
       AWS.config.update({
@@ -106,38 +106,10 @@ export default function Profile() {
       });
 
       const s3 = new AWS.S3();
-      // const client = new S3Client({
-      //   region: REGION,
-      //   credentials: {
-      //     accessKeyId: API_KEY,
-      //     secretAccessKey: API_SECRET,
-      //   },
-      // });
-
       const params = {
         Bucket: albumBucketName,
         Key: photoKey,
       };
-
-      // const command = new GetObjectCommand({
-      //   Bucket: albumBucketName,
-      //   Key: photoKey,
-      // });
-
-      // try {
-      //   const response = await client.send(command);
-      //   // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
-      //   const str = await response.Body.transformToString();
-      //   const blob = new Blob([response.Body], { type: "image/png" }); // Replace 'your-mime-type-here' with the appropriate MIME type if you know it.
-
-      //   // Create a URL for the Blob
-      //   const blobURL = URL.createObjectURL(blob);
-      //   console.log(blobURL);
-      //   setPhotoURL(blobURL);
-      //   console.log(str);
-      // } catch (err) {
-      //   console.error(err);
-      // }
 
       s3.getObject(params, function (err, data) {
         if (err) {
@@ -148,42 +120,39 @@ export default function Profile() {
           const url = URL.createObjectURL(blob);
           setPhotoURL(url);
           setLoading(false);
-          console.log("Photo fetched");
+          dispatch(STORE_PREVIEW_FLAG(false));
         }
       });
-      const endtime = Date.now();
-      const timetaken = (endtime - starttime) / 1000;
-      console.log("Time taken : " + timetaken);
     }
     var fileExtension = DATA_FROM_STATE.photo.split(".").pop();
-    console.log(
-      `users/photos/${DATA_FROM_STATE.photo.split(".")[0]}_${
-        DATA_FROM_STATE.username
-      }.${fileExtension}`
-    );
+
     displayPhoto(
       `users/photos/${DATA_FROM_STATE.photo.split(".")[0]}_${
         DATA_FROM_STATE.username
       }.${fileExtension}`
     );
-  }, [DATA_FROM_STATE]);
+  }, [DATA_FROM_STATE, dispatch]);
 
+  // if user directly tries to access preview page, then navigate to home page
   useEffect(() => {
     if (location.pathname === "/preview") {
       if (!DATA_FROM_STATE.name) navigate("/");
     }
   }, [DATA_FROM_STATE, navigate, location]);
 
+  // if username doesn't exists, then navigate to error page
   useEffect(() => {
     if (errorPage) {
       navigate("/error");
     }
   }, [errorPage, navigate]);
 
+  // scroll the page to top on render
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // check if a icon exists, if not display the link icon
   function iconExists(iconClass) {
     iconClass = iconClass.toLowerCase().trim().replace(" ", "-");
     const iconElement = document.createElement("i");
@@ -195,6 +164,7 @@ export default function Profile() {
     else return "fa fa-link";
   }
 
+  // modify the object to map name and link for the custom links
   const newLinks = Object.fromEntries(
     Object.entries(links).reduce((acc, [key, value]) => {
       if (key.includes("customlink")) {

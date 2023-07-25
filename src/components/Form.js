@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import "tailwindcss/tailwind.css";
-import DialogBox from "./DialogBox";
+import { useDispatch, useSelector } from "react-redux";
 import { App, Credentials } from "realm-web";
-import { useSelector } from "react-redux";
 import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
 import AWS from "aws-sdk";
 import Loading from "./Loading";
+import DialogBox from "./DialogBox";
 
 export default function Form() {
   const {
@@ -24,8 +22,8 @@ export default function Form() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+
   const watchInputs = watch();
-  const [loading, setLoading] = useState(false);
 
   const app = new App({ id: "href-social-qmufp" });
 
@@ -37,6 +35,11 @@ export default function Form() {
   const [showModal, setShowModal] = useState();
   const [submit, setSubmit] = useState(false);
   const [deleteBtn, setDeleteBtn] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [hasChanged, setHasChanged] = useState(false);
+  const [checkUsername, setCheckUsername] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   const dispatchData = () => {
     const data = getValues();
@@ -54,7 +57,7 @@ export default function Form() {
     };
     dispatch(STORE_DATA_IN_STATE(newDataWithPhoto));
     dispatch(STORE_TOTAL_CUSTOM_LINKS(customLink));
-    //console.log(DATA_FROM_STATE);
+
     reset();
   };
 
@@ -67,6 +70,7 @@ export default function Form() {
     return collection;
   };
 
+  // if a user directly tries to open edit form then it will navigate to home
   useEffect(() => {
     if (location.pathname.includes("/edit")) {
       if (!DATA_FROM_STATE.name) navigate("/");
@@ -88,10 +92,8 @@ export default function Form() {
               key !== "securityKey"
             ) {
               if (DATA_FROM_STATE[key] !== watchInputs[key]) {
-                //console.log(DATA_FROM_STATE[key] + "===" + watchInputs[key]);
-                //console.log("loadinggg 1 ; " + loading);
                 setLoading(true);
-                //console.log("loadinggg 2 ; " + loading);
+
                 const app = new App({ id: "href-social-qmufp" });
                 await app.logIn(Credentials.anonymous());
                 const mongoClient =
@@ -104,7 +106,7 @@ export default function Form() {
                   { username: DATA_FROM_STATE["username"] },
                   { $set: { [key]: watchInputs[key] } }
                 );
-                //console.log("loadinggg 3 ; " + loading);
+
                 setLoading(false);
 
                 navigate(`/${DATA_FROM_STATE.username}`);
@@ -124,8 +126,7 @@ export default function Form() {
     dispatchData();
   };
 
-  const [hasChanged, setHasChanged] = useState(false);
-
+  // when updating the data, it will check if any input is changed
   useEffect(() => {
     if (watchInputs.name) {
       for (const key in DATA_FROM_STATE) {
@@ -135,8 +136,6 @@ export default function Form() {
           key !== "securityKey"
         ) {
           if (DATA_FROM_STATE[key] !== watchInputs[key]) {
-            //console.log("inside dataaa");
-            //console.log(DATA_FROM_STATE[key] + "===" + watchInputs[key]);
             setHasChanged(true);
             return;
           }
@@ -165,9 +164,6 @@ export default function Form() {
     }
   };
 
-  const [checkUsername, setCheckUsername] = useState(false);
-  const [usernameAvailable, setUsernameAvailable] = useState(false);
-
   const validateUsername = async () => {
     if (!location.pathname.includes("/edit") && !usernameAvailable) {
       setCheckUsername(true);
@@ -179,7 +175,6 @@ export default function Form() {
         username: `${username}`,
       });
 
-      //console.log(usernameAvailable.name);
       if (usernameAvailable !== null) {
         setCheckUsername(false);
         setUsernameAvailable(false);
@@ -191,6 +186,7 @@ export default function Form() {
     }
   };
 
+  // if errors are still there, don't show the Dialog box
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       setShowModal(false);
@@ -203,51 +199,27 @@ export default function Form() {
     if (e.target.value === "Update") {
       setUpdate(true);
     }
-    //setPreview(false);
     console.log(e.target.value);
   };
-
-  //  const [preview, setPreview] = useState(false);
-  const [update, setUpdate] = useState(false);
 
   const handlePreviewClick = (e) => {
     setSubmit(false);
     if (e.target.value === "Cancel") {
       navigate(`/${DATA_FROM_STATE.username}`);
     }
-    //setPreview(true);
   };
 
+  // when user clicks on edit profile, the user is redirected to home page with  all the inputs populated
   useEffect(() => {
-    //console.log("Redux : " + DATA_FROM_STATE.photo);
     if (location.pathname !== "/") {
       for (let key in DATA_FROM_STATE) {
         setValue(key, DATA_FROM_STATE[key]);
       }
-
-      // async function fetchData() {
-      //   const app = new App({ id: "href-social-qmufp" });
-      //   await app.logIn(Credentials.anonymous());
-      //   const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
-      //   const collections = mongoClient
-      //     .db("href-social-db")
-      //     .collection("href-social-collection");
-      //   const username = location.pathname.split("/")[2];
-      //   const dataByUserName = await collections.findOne({
-      //     username: `${username}`,
-      //   });
-      //   return dataByUserName;
-      // }
-      // const dataObj = fetchData();
-      // for (let key in dataObj) {
-      //   setValue(key, DATA_FROM_STATE[key]);
-      // }
     }
   }, [DATA_FROM_STATE, setValue, location]);
 
+  // upload photo to s3
   function addPhoto(data) {
-    //const data = getValues();
-    //console.log(data);
     if (data.username && data.photo) {
       AWS.config.update({
         accessKeyId: process.env.REACT_APP_AWS_APIKEY,
@@ -256,25 +228,20 @@ export default function Form() {
       });
       let albumBucketName = "href-social";
       var files = document.getElementById("photo").files;
-      console.log(document.getElementById("photo").files);
-      // if (!files.length) {
-      //   return alert("Please choose a file to upload first.");
-      // }
+
       var file = files[0];
-      console.log(file);
       var originalFileName = file.name;
       var fileExtension = originalFileName.split(".").pop();
-      console.log("1 - " + originalFileName);
-      console.log("2 - " + fileExtension);
+
       var newFileName =
         originalFileName.split(".")[0] +
         "_" +
         data.username +
         "." +
         fileExtension;
-      // var albumPhotosKey = encodeURIComponent(albumName) + "/";
-      console.log(newFileName);
+
       var photoKey = "users/photos/" + newFileName;
+
       // Use S3 ManagedUpload class as it supports multipart uploads
       var upload = new AWS.S3.ManagedUpload({
         params: {

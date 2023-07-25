@@ -7,14 +7,16 @@ import { App, Credentials } from "realm-web";
 
 const DialogBox = () => {
   const [modal, setModal] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
   const [submit, setSubmit] = useState(true);
   const [securityQ, setSecurityQ] = useState("");
   const [error, setError] = useState(false);
-
+  const [data, setData] = useState(false);
   const [hmac, setHmacAlgo, setHmacMessage, setHmacSecret] = useHmac();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
 
   const goToMyProfile = () => {
     navigate(`/${DATA_FROM_STATE.username}`);
@@ -36,14 +38,10 @@ const DialogBox = () => {
       setSubmit(false);
       setHmacAlgo("HmacMD5");
       setHmacMessage(`/${DATA_FROM_STATE.username}`);
-      console.log("sec : " + securityQ);
-
-      // console.log(securityQ);
     }
   };
 
-  const [data, setData] = useState(false);
-
+  // check if hmac is updated with new value
   useEffect(() => {
     setHmacSecret(securityQ);
     if (hmac && securityQ.length > 0 && !submit) {
@@ -51,10 +49,10 @@ const DialogBox = () => {
     }
   }, [hmac, securityQ, setHmacSecret, submit]);
 
+  // store all the data to db
   useEffect(() => {
     async function storeData() {
       if (data) {
-        console.log(hmac);
         const updatedData = {
           ...DATA_FROM_STATE,
           securityKey: { hmac },
@@ -69,7 +67,6 @@ const DialogBox = () => {
           .collection("href-social-collection");
 
         await collection.insertOne(updatedData);
-        console.log(updatedData);
       }
     }
     storeData();

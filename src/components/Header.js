@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 export default function Headers() {
   const param = useLocation();
   const navigate = useNavigate();
+
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
   const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
 
