@@ -92,12 +92,12 @@ export default function Profile() {
   const [photoURL, setPhotoURL] = useState(null);
 
   useEffect(() => {
-    function displayPhoto(photoKey) {
+    async function displayPhoto(photoKey) {
       console.log("Fetching photo");
       const starttime = Date.now();
-      const API_KEY = process.env.REACT_APP_AWS_APIKEY;
-      const API_SECRET = process.env.REACT_APP_AWS_SECRET;
-      const REGION = process.env.REACT_APP_AWS_REGION;
+      const API_KEY = "AKIARAU2UJCVAMRSBUQL"; //process.env.REACT_APP_AWS_APIKEY;
+      const API_SECRET = "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"; //process.env.REACT_APP_AWS_SECRET;
+      const REGION = "us-east-1"; //process.env.REACT_APP_AWS_REGION;
       const albumBucketName = "href-social";
 
       AWS.config.update({
@@ -107,11 +107,38 @@ export default function Profile() {
       });
 
       const s3 = new AWS.S3();
+      // const client = new S3Client({
+      //   region: REGION,
+      //   credentials: {
+      //     accessKeyId: API_KEY,
+      //     secretAccessKey: API_SECRET,
+      //   },
+      // });
 
       const params = {
         Bucket: albumBucketName,
         Key: photoKey,
       };
+
+      // const command = new GetObjectCommand({
+      //   Bucket: albumBucketName,
+      //   Key: photoKey,
+      // });
+
+      // try {
+      //   const response = await client.send(command);
+      //   // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
+      //   const str = await response.Body.transformToString();
+      //   const blob = new Blob([response.Body], { type: "image/png" }); // Replace 'your-mime-type-here' with the appropriate MIME type if you know it.
+
+      //   // Create a URL for the Blob
+      //   const blobURL = URL.createObjectURL(blob);
+      //   console.log(blobURL);
+      //   setPhotoURL(blobURL);
+      //   console.log(str);
+      // } catch (err) {
+      //   console.error(err);
+      // }
 
       s3.getObject(params, function (err, data) {
         if (err) {
@@ -122,15 +149,11 @@ export default function Profile() {
           const url = URL.createObjectURL(blob);
           setPhotoURL(url);
           console.log("Photo fetched");
-          const endtime = Date.now();
-          const timetaken = (endtime - starttime) / 1000;
-          console.log("Time taken : " + timetaken);
-
-          // Display the photo in an img tag
-          //const img = document.getElementById("myImage"); // Assuming you have an img tag with id 'myImage'
-          //img.src = url;
         }
       });
+      const endtime = Date.now();
+      const timetaken = (endtime - starttime) / 1000;
+      console.log("Time taken : " + timetaken);
     }
     var fileExtension = DATA_FROM_STATE.photo.split(".").pop();
     console.log(
