@@ -92,8 +92,9 @@ export default function Profile() {
   const [photoURL, setPhotoURL] = useState(null);
 
   useEffect(() => {
-    async function displayPhoto(photoKey) {
+    function displayPhoto(photoKey) {
       console.log("Fetching photo");
+      setLoading(true);
       const starttime = Date.now();
       const API_KEY = "AKIARAU2UJCVAMRSBUQL"; //process.env.REACT_APP_AWS_APIKEY;
       const API_SECRET = "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"; //process.env.REACT_APP_AWS_SECRET;
@@ -148,6 +149,7 @@ export default function Profile() {
           const blob = new Blob([data.Body], { type: data.ContentType });
           const url = URL.createObjectURL(blob);
           setPhotoURL(url);
+          setLoading(false);
           console.log("Photo fetched");
         }
       });

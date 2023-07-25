@@ -289,7 +289,7 @@ export default function Form() {
       var promise = upload.promise();
       promise.then(
         function (data) {
-          alert("Successfully uploaded photo.");
+          console.log("Successfully uploaded photo");
         },
         function (err) {
           return console.log(err.message);
