@@ -7,13 +7,12 @@ import {
   STORE_DATA_IN_STATE,
   STORE_EDIT_PROFILE_FLAG,
   STORE_PREVIEW_FLAG,
-  STORE_IMAGE_URL,
 } from "../Reducers";
 import AWS from "aws-sdk";
 
 export default function Profile() {
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
-  const IMAGE = useSelector((state) => state.DATA.IMAGE);
+  //const IMAGE = useSelector((state) => state.DATA.IMAGE);
 
   const location = useLocation();
   const dispatch = useDispatch();

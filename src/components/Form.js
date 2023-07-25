@@ -3,11 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { App, Credentials } from "realm-web";
-import {
-  STORE_DATA_IN_STATE,
-  STORE_TOTAL_CUSTOM_LINKS,
-  UPDATE_FORM_DATA,
-} from "../Reducers";
+import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
 import AWS from "aws-sdk";
 import Loading from "./Loading";
 import DialogBox from "./DialogBox";
@@ -51,7 +47,8 @@ export default function Form() {
     const data = getValues();
     const { link, customName, photo, ...newDataWithOutPhoto } = data;
     let fileList = "";
-    if (document.getElementById("photo")) {
+    console.log(document.getElementById("photo"));
+    if (watchInputs["photo"][0].name) {
       console.log("Inside data if");
       fileList = data.photo[0].name;
       console.log(fileList);
