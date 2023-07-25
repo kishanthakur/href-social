@@ -8,6 +8,7 @@ export default function Headers() {
   const navigate = useNavigate();
 
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+
   const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
 
   const [showModal, setShowModal] = useState(false);

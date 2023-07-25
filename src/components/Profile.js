@@ -5,14 +5,15 @@ import { useSelector, useDispatch } from "react-redux";
 import Loading from "./Loading";
 import {
   STORE_DATA_IN_STATE,
-  STORE_TOTAL_CUSTOM_LINKS,
   STORE_EDIT_PROFILE_FLAG,
   STORE_PREVIEW_FLAG,
+  STORE_IMAGE_URL,
 } from "../Reducers";
 import AWS from "aws-sdk";
 
 export default function Profile() {
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const IMAGE = useSelector((state) => state.DATA.IMAGE);
 
   const location = useLocation();
   const dispatch = useDispatch();
@@ -37,7 +38,9 @@ export default function Profile() {
 
   // if state is available, then use the data from state otherwise fetch the data from db
   useEffect(() => {
+    //console.log("Inside fetching data");
     if (DATA_FROM_STATE.name) {
+      console.log(DATA_FROM_STATE);
       setProfileData(DATA_FROM_STATE);
       setLoading(false);
       dispatch(STORE_EDIT_PROFILE_FLAG(true));
@@ -63,15 +66,15 @@ export default function Profile() {
           dispatch(STORE_EDIT_PROFILE_FLAG(true));
           const { _id, ...updatedDataByUsername } = dataByUserName;
           dispatch(STORE_DATA_IN_STATE(updatedDataByUsername));
-          console.log(updatedDataByUsername);
-          dispatch(
-            STORE_TOTAL_CUSTOM_LINKS(updatedDataByUsername.totalCustomLinks)
-          );
+          //console.log(updatedDataByUsername);
+          // dispatch(
+          //   STORE_TOTAL_CUSTOM_LINKS(updatedDataByUsername.totalCustomLinks)
+          // );
         }
       }
       fetchData();
     }
-  }, [DATA_FROM_STATE, dispatch, location.pathname]);
+  }, [DATA_FROM_STATE, dispatch, location]);
 
   // create new object with just links
   const newStoredData = { ...profileData };
@@ -82,10 +85,8 @@ export default function Profile() {
         key !== "name" &&
         key !== "username" &&
         key !== "description" &&
-        key !== "bgcolor" &&
         key !== "photo" &&
         key !== "_id" &&
-        key !== "totalCustomLinks" &&
         key !== "securityKey" &&
         key !== "securityQuestion"
       );
@@ -94,44 +95,50 @@ export default function Profile() {
 
   // fetch the photo from s3
   useEffect(() => {
-    function displayPhoto(photoKey) {
-      setLoading(true);
-      dispatch(STORE_EDIT_PROFILE_FLAG(false));
-      const albumBucketName = "href-social";
+    //console.log("Inside fetch photo");
+    console.log(profileData);
+    if (profileData.username) {
+      function displayPhoto(photoKey) {
+        setLoading(true);
+        dispatch(STORE_EDIT_PROFILE_FLAG(false));
+        const albumBucketName = "href-social";
 
-      AWS.config.update({
-        accessKeyId: process.env.REACT_APP_AWS_APIKEY,
-        secretAccessKey: process.env.REACT_APP_AWS_SECRET,
-        region: process.env.REACT_APP_AWS_REGION,
-      });
+        AWS.config.update({
+          accessKeyId: process.env.REACT_APP_AWS_APIKEY,
+          secretAccessKey: process.env.REACT_APP_AWS_SECRET,
+          region: process.env.REACT_APP_AWS_REGION,
+        });
 
-      const s3 = new AWS.S3();
-      const params = {
-        Bucket: albumBucketName,
-        Key: photoKey,
-      };
+        const s3 = new AWS.S3();
+        const params = {
+          Bucket: albumBucketName,
+          Key: photoKey,
+        };
 
-      s3.getObject(params, function (err, data) {
-        if (err) {
-          console.log(err, err.stack); // Handle errors
-        } else {
-          // Convert the fetched data to a blob and create an object URL
-          const blob = new Blob([data.Body], { type: data.ContentType });
-          const url = URL.createObjectURL(blob);
-          setPhotoURL(url);
-          setLoading(false);
-          dispatch(STORE_EDIT_PROFILE_FLAG(true));
-        }
-      });
+        s3.getObject(params, function (err, data) {
+          if (err) {
+            console.log(err, err.stack); // Handle errors
+          } else {
+            // Convert the fetched data to a blob and create an object URL
+            const blob = new Blob([data.Body], { type: data.ContentType });
+            const url = URL.createObjectURL(blob);
+            setPhotoURL(url);
+            setLoading(false);
+            dispatch(STORE_EDIT_PROFILE_FLAG(true));
+          }
+        });
+      }
+
+      console.log("pd : " + profileData.photo);
+
+      var fileExtension = profileData.photo.split(".").pop();
+      displayPhoto(
+        `users/photos/${profileData.photo.split(".")[0]}_${
+          profileData.username
+        }.${fileExtension}`
+      );
     }
-    var fileExtension = DATA_FROM_STATE.photo.split(".").pop();
-
-    displayPhoto(
-      `users/photos/${DATA_FROM_STATE.photo.split(".")[0]}_${
-        DATA_FROM_STATE.username
-      }.${fileExtension}`
-    );
-  }, [DATA_FROM_STATE, dispatch]);
+  }, [profileData, dispatch]);
 
   // if user directly tries to access preview page, then navigate to home page
   useEffect(() => {
@@ -164,20 +171,20 @@ export default function Profile() {
     else return "fa fa-link";
   }
 
-  // modify the object to map name and link for the custom links
-  const newLinks = Object.fromEntries(
-    Object.entries(links).reduce((acc, [key, value]) => {
-      if (key.includes("customlink")) {
-        const newKey = `customname${key.replace("customlink", "")}`;
-        acc.push([links[newKey], links[key]]);
-      } else if (key.includes("Email")) {
-        acc.push([key, `mailto:${value}`]);
-      } else if (!key.includes("customname")) {
-        acc.push([key, value]);
-      }
-      return acc;
-    }, [])
-  );
+  // // modify the object to map name and link for the custom links
+  // const newLinks = Object.fromEntries(
+  //   Object.entries(links).reduce((acc, [key, value]) => {
+  //     if (key.includes("customlink")) {
+  //       const newKey = `customname${key.replace("customlink", "")}`;
+  //       acc.push([links[newKey], links[key]]);
+  //     } else if (key.includes("Email")) {
+  //       acc.push([key, `mailto:${value}`]);
+  //     } else if (!key.includes("customname")) {
+  //       acc.push([key, value]);
+  //     }
+  //     return acc;
+  //   }, [])
+  // );
 
   return (
     <>
@@ -198,7 +205,7 @@ export default function Profile() {
             {profileData.description}
           </p>
 
-          {Object.entries(newLinks).map(([key, value], index) => {
+          {Object.entries(links).map(([key, value], index) => {
             return (
               <div
                 key={index}

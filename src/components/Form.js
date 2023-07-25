@@ -31,7 +31,9 @@ export default function Form() {
   const CUSTOM_LINKS = useSelector((state) => state.DATA.TOTAL_CUSTOM_LINKS);
   const PREVIEW = useSelector((state) => state.DATA.PREVIEW);
 
-  const [customLink, setCustomLink] = useState(CUSTOM_LINKS);
+  // const [customLink, setCustomLink] = useState(CUSTOM_LINKS);
+  const [links, setLinks] = useState(CUSTOM_LINKS);
+  const [linkError, setLinkError] = useState(false);
   const [showModal, setShowModal] = useState();
   const [submit, setSubmit] = useState(false);
   const [deleteBtn, setDeleteBtn] = useState(true);
@@ -43,20 +45,22 @@ export default function Form() {
 
   const dispatchData = () => {
     const data = getValues();
-    const { photo, ...newDataWithOutPhoto } = data;
+    const { link, customName, photo, ...newDataWithOutPhoto } = data;
     let fileList = "";
-    if (data.photo) {
+    if (document.getElementById("photo")) {
+      console.log("Inside data if");
       fileList = data.photo[0].name;
     } else {
+      console.log("inside data else");
       fileList = DATA_FROM_STATE.photo;
     }
     const newDataWithPhoto = {
       ...newDataWithOutPhoto,
       photo: fileList,
-      totalCustomLinks: customLink,
     };
+    console.log("newDataWithPhoto : " + newDataWithPhoto);
     dispatch(STORE_DATA_IN_STATE(newDataWithPhoto));
-    dispatch(STORE_TOTAL_CUSTOM_LINKS(customLink));
+    dispatch(STORE_TOTAL_CUSTOM_LINKS(links));
 
     reset();
   };
@@ -86,13 +90,16 @@ export default function Form() {
         console.log("hasChanged - " + hasChanged);
         if (hasChanged) {
           for (let key in DATA_FROM_STATE) {
-            if (
-              key !== "totalCustomLinks" &&
-              key !== "securityQuestion" &&
-              key !== "securityKey"
-            ) {
+            if (key !== "securityQuestion" && key !== "securityKey") {
               if (DATA_FROM_STATE[key] !== watchInputs[key]) {
                 setLoading(true);
+                console.log(
+                  key +
+                    " - " +
+                    DATA_FROM_STATE[key] +
+                    " ==== " +
+                    watchInputs[key]
+                );
 
                 const app = new App({ id: "href-social-qmufp" });
                 await app.logIn(Credentials.anonymous());
@@ -130,11 +137,7 @@ export default function Form() {
   useEffect(() => {
     if (watchInputs.name) {
       for (const key in DATA_FROM_STATE) {
-        if (
-          key !== "totalCustomLinks" &&
-          key !== "securityQuestion" &&
-          key !== "securityKey"
-        ) {
+        if (key !== "securityQuestion" && key !== "securityKey") {
           if (DATA_FROM_STATE[key] !== watchInputs[key]) {
             setHasChanged(true);
             return;
@@ -146,11 +149,23 @@ export default function Form() {
   }, [DATA_FROM_STATE, watchInputs]);
 
   const addCustomLinkTextBox = () => {
-    setCustomLink([...customLink, customLink.length + 1]);
+    const data = getValues();
+    if (data.customName !== "" && data.link !== "") {
+      setLinkError(false);
+      setLinks({ ...links, [data.customName]: data.link });
+      setValue("customName", "");
+      setValue("link", "");
+    } else {
+      setLinkError(true);
+    }
   };
 
-  const deleteCustomLink = () => {
-    setCustomLink(customLink.slice(0, -1));
+  const deleteCustomLink = ({ key }) => {
+    console.log(key);
+    const { [key]: valueToDelete, ...newObj } = links;
+    console.log(newObj);
+    setLinks(newObj);
+    //setCustomLink(customLink.slice(0, -1));
   };
 
   const validateFileExtension = () => {
@@ -220,7 +235,7 @@ export default function Form() {
 
   // upload photo to s3
   function addPhoto(data) {
-    if (data.username && data.photo) {
+    if (data.username && data.photo && document.getElementById("photo")) {
       AWS.config.update({
         accessKeyId: process.env.REACT_APP_AWS_APIKEY,
         secretAccessKey: process.env.REACT_APP_AWS_SECRET,
@@ -419,7 +434,6 @@ export default function Form() {
                 </div>
               </div>
             </div>
-
             <div className="mt-5">
               <div className="flex flex-wrap justify-center items-center mt-3">
                 <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
@@ -496,47 +510,73 @@ export default function Form() {
                 </div>
               </div>
             </div>
-            {customLink.map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center mt-6 w-full"
-              >
-                <div className="w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3 mx-auto">
-                  <div className="flex flex-col mb-3">
-                    <label
-                      htmlFor={`customlink${item}`}
-                      className="mb-2 text-sm font-medium text-gray-900 dark:text-black"
-                    >
-                      Custom Link #{item}
-                    </label>
-                    <input
-                      type="text"
-                      id={`customname${item}`}
-                      {...register(`customname${item}`)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Name"
-                    />
+            <div>
+              {Object.entries(links).map(([key, value], index) => (
+                <div key={index}>
+                  <div className="mt-5">
+                    <div className="flex flex-wrap justify-center items-center mt-3">
+                      <div className="flex flex-col w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3">
+                        <label
+                          htmlFor={`${key}`}
+                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
+                        >
+                          {key} Link
+                        </label>
+                        <input
+                          type="url"
+                          id={`${key}`}
+                          {...register(`${key}`)}
+                          value={`${value}`}
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 sm:w-3/4 lg:w-3/4 xl:w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          placeholder="https://www.youtube.com/..."
+                        />
+                        <button
+                          type="button"
+                          onClick={() => deleteCustomLink({ key })}
+                          className="text-white bg-red-600 hover:bg-red-700 rounded-lg text-sm w-20 h-8 mt-2"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-col mb-3">
-                    <input
-                      type="url"
-                      id={`customlink${item}`}
-                      {...register(`customlink${item}`)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="https://www.example.com"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={deleteCustomLink}
-                    className="text-white bg-red-600 hover:bg-red-700 rounded-lg text-sm w-20 h-8 mx-auto"
-                  >
-                    Delete
-                  </button>
+                  <div></div>
                 </div>
+              ))}
+            </div>
+            <div className="flex flex-col items-center mt-6 w-full">
+              <div className="w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3 mx-auto">
+                <div className="flex flex-col mb-3">
+                  <label
+                    htmlFor="customName"
+                    className="mb-2 text-sm font-medium text-gray-900 dark:text-black"
+                  >
+                    Custom Link
+                  </label>
+                  <input
+                    type="text"
+                    id="customName"
+                    {...register("customName")}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Name"
+                  />
+                </div>
+                <div className="flex flex-col mb-3">
+                  <input
+                    type="url"
+                    id="link"
+                    {...register("link")}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-50 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="https://www.example.com"
+                  />
+                </div>
+                {linkError && (
+                  <p className="text-red-600 font-semibold">
+                    *Please enter Name & Link both*
+                  </p>
+                )}
               </div>
-            ))}
-
+            </div>
             <div className="flex flex-col items-center mt-1 w-full">
               <div className="w-80 sm:w-3/4 lg:w-3/4 xl:w-2/3 mx-auto">
                 <div className="mt-6 mb-10">
