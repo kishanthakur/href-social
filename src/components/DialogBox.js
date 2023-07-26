@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useHmac } from "react-hash";
 import { App, Credentials } from "realm-web";
 import { STORE_DATA_IN_STATE } from "../Reducers";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const DialogBox = () => {
   const [modal, setModal] = useState(true);
@@ -123,6 +124,15 @@ const DialogBox = () => {
     storeDataToDB();
   }, [data, secret, hasDispatched, DATA_FROM_STATE]);
 
+  const hmacRef = useRef(null);
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 3000);
+  };
+
   return (
     <>
       {modal ? (
@@ -188,7 +198,29 @@ const DialogBox = () => {
                       )}
                     </>
                   ) : (
-                    <p className="mb-0">{hmac}</p>
+                    <div className="flex flex-col sm:flex-row items-center">
+                      <div className="flex flex-col items-center">
+                        <p className="text-gray-500 text-sm mb-1">
+                          *Save this key to edit your profile*
+                        </p>
+                        <p
+                          className="mb-0  border-dashed border-black border-2 p-2 text-sm sm:text-lg"
+                          ref={hmacRef}
+                        >
+                          {hmac}
+                        </p>
+                      </div>
+
+                      <CopyToClipboard text={hmac}>
+                        <button
+                          type="button"
+                          onClick={handleCopy}
+                          className="mt-2 sm:mt-0 ml-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded hover:from-purple-600 hover:to-blue-500 transform hover:scale-105 active:scale-95 transition-all duration-300"
+                        >
+                          {isCopied ? "Copied" : "Copy"}
+                        </button>
+                      </CopyToClipboard>
+                    </div>
                   )}
                 </div>
                 <div className="flex items-center justify-end p-3 border-t border-solid border-blueGray-200 rounded-b">
