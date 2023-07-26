@@ -364,7 +364,7 @@ export default function Form() {
                     )}
                   {checkUsername && usernameAvailable === false && (
                     <>
-                      <div className="mt-2 flex justify-start mt-1 space-x-1">
+                      <div className="mt-2 flex justify-start space-x-1">
                         <div className="animate-spin border-t-2 border-b-2 border-blue-500 w-5 h-5 rounded-full"></div>
                         <p className="font-semibold"> Checking the Username</p>
                       </div>
