@@ -170,20 +170,17 @@ export default function Profile() {
     else return "fa fa-link";
   }
 
-  // // modify the object to map name and link for the custom links
-  // const newLinks = Object.fromEntries(
-  //   Object.entries(links).reduce((acc, [key, value]) => {
-  //     if (key.includes("customlink")) {
-  //       const newKey = `customname${key.replace("customlink", "")}`;
-  //       acc.push([links[newKey], links[key]]);
-  //     } else if (key.includes("Email")) {
-  //       acc.push([key, `mailto:${value}`]);
-  //     } else if (!key.includes("customname")) {
-  //       acc.push([key, value]);
-  //     }
-  //     return acc;
-  //   }, [])
-  // );
+  // modify the object to map name and link for the custom links
+  const newLinks = Object.fromEntries(
+    Object.entries(links).reduce((acc, [key, value]) => {
+      if (key.includes("Email")) {
+        acc.push([key, `mailto:${value}`]);
+      } else {
+        acc.push([key, value]);
+      }
+      return acc;
+    }, [])
+  );
 
   return (
     <>
@@ -204,7 +201,7 @@ export default function Profile() {
             {profileData.description}
           </p>
 
-          {Object.entries(links).map(([key, value], index) => {
+          {Object.entries(newLinks).map(([key, value], index) => {
             return (
               <div
                 key={index}
