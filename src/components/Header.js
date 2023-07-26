@@ -1,17 +1,30 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import DialogBox from "./DialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { STORE_VERIFY_KEY_FLAG } from "../Reducers";
 
 export default function Headers() {
   const param = useLocation();
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  //const navigate = useNavigate();
 
-  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  //const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
 
   const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
 
   const [showModal, setShowModal] = useState(false);
+
+  const handleEditProfileClick = () => {
+    console.log("Inside edit profile");
+    setShowModal(true);
+    console.log(showModal);
+    if (param.pathname === "/preview") {
+      dispatch(STORE_VERIFY_KEY_FLAG(false));
+    } else {
+      dispatch(STORE_VERIFY_KEY_FLAG(true));
+    }
+  };
 
   return (
     <>
@@ -30,7 +43,7 @@ export default function Headers() {
             EDIT_PROFILE === true ? (
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={() => navigate(`/edit/${DATA_FROM_STATE.username}`)}
+                onClick={handleEditProfileClick}
               >
                 Edit Profile
               </button>

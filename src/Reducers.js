@@ -7,6 +7,7 @@ const initialState = {
   PREVIEW: false,
   IMAGE: "",
   DB_DATA: {},
+  VERIFY_KEY: false,
 };
 
 export const dataSlice = createSlice({
@@ -34,6 +35,9 @@ export const dataSlice = createSlice({
     UPDATE_FORM_DATA: (state, action) => {
       state.FORM_DATA[action.payload.key] = action.payload.value;
     },
+    STORE_VERIFY_KEY_FLAG: (state, action) => {
+      state.VERIFY_KEY = action.payload;
+    },
   },
 });
 
@@ -45,6 +49,7 @@ export const {
   STORE_IMAGE_URL,
   STORE_DB_DATA,
   UPDATE_FORM_DATA,
+  STORE_VERIFY_KEY_FLAG,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

@@ -9,6 +9,7 @@ const DialogBox = () => {
   const [modal, setModal] = useState(true);
   const [submit, setSubmit] = useState(true);
   const [securityQ, setSecurityQ] = useState("");
+  const [securityKey, setSecurityKey] = useState("");
   const [error, setError] = useState(false);
   const [data, setData] = useState(false);
   const [hmac, setHmacAlgo, setHmacMessage, setHmacSecret] = useHmac();
@@ -17,6 +18,7 @@ const DialogBox = () => {
   const location = useLocation();
 
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const VERIFY_KEY = useSelector((state) => state.DATA.VERIFY_KEY);
 
   const goToMyProfile = () => {
     navigate(`/${DATA_FROM_STATE.username}`);
@@ -29,15 +31,44 @@ const DialogBox = () => {
     }
   };
 
+  const [verifyKey, setVerifyKey] = useState(false);
+  const [verifyKeyError, setVerifyKeyError] = useState(false);
+
   const handleSubmit = async () => {
     setModal(true);
-    if (securityQ === "") {
-      setError(true);
+
+    if (VERIFY_KEY) {
+      console.log("Inside verify");
+      if (securityKey === "") {
+        setError(true);
+      } else {
+        setVerifyKey(true);
+        setError(false);
+        console.log("Inside verify else");
+        console.log(DATA_FROM_STATE.securityKey.hmac + " ==== " + securityKey);
+        if (DATA_FROM_STATE.securityKey.hmac === securityKey) {
+          console.log("Inside true");
+          setVerifyKeyError(false);
+          setSubmit(false);
+          setVerifyKey(false);
+          setModal(false);
+          navigate(`/edit/${DATA_FROM_STATE.username}`);
+        } else {
+          console.log("Inside verify error");
+          setVerifyKey(false);
+          setVerifyKeyError(true);
+          console.log(verifyKeyError);
+        }
+      }
     } else {
-      setError(false);
-      setSubmit(false);
-      setHmacAlgo("HmacMD5");
-      setHmacMessage(`/${DATA_FROM_STATE.username}`);
+      if (securityQ === "") {
+        setError(true);
+      } else {
+        setError(false);
+        setSubmit(false);
+        setHmacAlgo("HmacMD5");
+        setHmacMessage(`/${DATA_FROM_STATE.username}`);
+      }
     }
   };
 
@@ -88,7 +119,35 @@ const DialogBox = () => {
                   </h5>
                 </div>
                 <div className="relative p-5 flex-auto">
-                  {submit ? (
+                  {VERIFY_KEY ? (
+                    <>
+                      <p className="text-gray-600 mb-4">
+                        Enter security ket to edit profile
+                      </p>
+                      <input
+                        type="text"
+                        value={securityKey}
+                        placeholder="Enter your security key"
+                        className="w-full p-2 border rounded"
+                        onChange={(e) => setSecurityKey(e.target.value)}
+                      />
+                      {error && (
+                        <p className="text-red-600 mt-1">
+                          Please enter security key
+                        </p>
+                      )}
+                      {verifyKey && (
+                        <p className="text-green-600 mt-1">
+                          Verifying security key...
+                        </p>
+                      )}
+                      {verifyKeyError && (
+                        <p className="text-red-600 mt-1">
+                          The security key does not match
+                        </p>
+                      )}
+                    </>
+                  ) : submit ? (
                     <>
                       <p className="text-gray-600 mb-4">
                         *Enter the security question to generate your security
@@ -126,7 +185,9 @@ const DialogBox = () => {
                     </button>
                   ) : null}
 
-                  {location.pathname !== "/preview" && !submit ? (
+                  {location.pathname !== "/preview" &&
+                  !submit &&
+                  !VERIFY_KEY ? (
                     <button
                       className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                       type="button"

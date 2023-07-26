@@ -84,11 +84,16 @@ export default function Form() {
     }
   }, [DATA_FROM_STATE, navigate, location]);
 
+  const [isUploading, setIsUploading] = useState(false);
+
   const onSubmit = async (data) => {
     addPhoto(data);
+
     if (update) {
       if (PREVIEW) {
-        navigate("/preview");
+        if (!isUploading) {
+          navigate("/preview");
+        }
       } else {
         console.log("hasChanged - " + hasChanged);
         if (hasChanged) {
@@ -125,20 +130,23 @@ export default function Form() {
                     { $set: { [key]: watchInputs[key] } }
                   );
                 }
-
-                setLoading(false);
-
-                navigate(`/${DATA_FROM_STATE.username}`);
               }
             }
+          }
+          setLoading(false);
+          if (!isUploading) {
+            navigate(`/${DATA_FROM_STATE.username}`);
           }
         }
       }
     } else {
-      if (Object.keys(errors).length === 0 && !submit) {
-        navigate("/preview");
-      } else {
-        setShowModal(true);
+      console.log("isUploading - " + isUploading);
+      if (!isUploading) {
+        if (Object.keys(errors).length === 0 && !submit) {
+          navigate("/preview");
+        } else {
+          setShowModal(true);
+        }
       }
     }
 
@@ -232,7 +240,11 @@ export default function Form() {
   const handlePreviewClick = (e) => {
     setSubmit(false);
     if (e.target.value === "Cancel") {
-      navigate(`/${DATA_FROM_STATE.username}`);
+      if (PREVIEW) {
+        navigate("/preview");
+      } else {
+        navigate(`/${DATA_FROM_STATE.username}`);
+      }
     }
   };
 
@@ -277,12 +289,18 @@ export default function Form() {
           Body: file,
         },
       });
+      //setLoading(true);
+      setIsUploading(true);
       var promise = upload.promise();
       promise.then(
         function (data) {
           console.log("Successfully uploaded photo");
+          setIsUploading(false);
+          //setLoading(false);
         },
         function (err) {
+          //setLoading(false);
+          setIsUploading(false);
           return console.log(err.message);
         }
       );
