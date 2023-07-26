@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useHmac } from "react-hash";
 import { App, Credentials } from "realm-web";
+import { STORE_DATA_IN_STATE } from "../Reducers";
 
 const DialogBox = () => {
   const [modal, setModal] = useState(true);
@@ -16,6 +17,7 @@ const DialogBox = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
   const VERIFY_KEY = useSelector((state) => state.DATA.VERIFY_KEY);
@@ -34,7 +36,7 @@ const DialogBox = () => {
   const [verifyKey, setVerifyKey] = useState(false);
   const [verifyKeyError, setVerifyKeyError] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     setModal(true);
 
     if (VERIFY_KEY) {
@@ -68,28 +70,43 @@ const DialogBox = () => {
         setSubmit(false);
         setHmacAlgo("HmacMD5");
         setHmacMessage(`/${DATA_FROM_STATE.username}`);
+        setHmacSecret(securityQ);
       }
     }
   };
 
+  const [secret, setSecret] = useState(false);
+
   // check if hmac is updated with new value
   useEffect(() => {
-    setHmacSecret(securityQ);
     if (hmac && securityQ.length > 0 && !submit) {
       setData(true);
+      setSecret(true);
     }
-  }, [hmac, securityQ, setHmacSecret, submit]);
+  }, [hmac, securityQ, submit]);
 
-  // store all the data to db
+  const [hasDispatched, setHasDispatched] = useState(false);
+
   useEffect(() => {
-    async function storeData() {
-      if (data) {
-        const updatedData = {
-          ...DATA_FROM_STATE,
-          securityKey: { hmac },
-          securityQuestion: securityQ,
-        };
+    if (data && secret && !hasDispatched) {
+      const updatedData = {
+        ...DATA_FROM_STATE,
+        securityKey: { hmac },
+        securityQuestion: securityQ,
+      };
 
+      // Check if data has genuinely changed
+      if (JSON.stringify(updatedData) !== JSON.stringify(DATA_FROM_STATE)) {
+        console.log("INSIDE DISPATCH DATA");
+        dispatch(STORE_DATA_IN_STATE(updatedData));
+        setHasDispatched(true);
+      }
+    }
+  }, [DATA_FROM_STATE, data, dispatch, hasDispatched, hmac, secret, securityQ]);
+
+  useEffect(() => {
+    async function storeDataToDB() {
+      if (data && secret && hasDispatched) {
         const app = new App({ id: "href-social-qmufp" });
         await app.logIn(Credentials.anonymous());
         const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
@@ -97,11 +114,14 @@ const DialogBox = () => {
           .db("href-social-db")
           .collection("href-social-collection");
 
-        await collection.insertOne(updatedData);
+        await collection.insertOne(DATA_FROM_STATE);
+
+        console.log("Db updatedddd");
+        setHasDispatched(false); // Reset after DB update
       }
     }
-    storeData();
-  }, [DATA_FROM_STATE, data, hmac, securityQ]);
+    storeDataToDB();
+  }, [data, secret, hasDispatched, DATA_FROM_STATE]);
 
   return (
     <>

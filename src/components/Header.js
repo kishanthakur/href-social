@@ -7,9 +7,6 @@ import { STORE_VERIFY_KEY_FLAG } from "../Reducers";
 export default function Headers() {
   const param = useLocation();
   const dispatch = useDispatch();
-  //const navigate = useNavigate();
-
-  //const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
 
   const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
 
@@ -17,12 +14,15 @@ export default function Headers() {
 
   const handleEditProfileClick = () => {
     console.log("Inside edit profile");
+    console.log("showModal : " + showModal);
     setShowModal(true);
-    console.log(showModal);
+    console.log("showModal : " + showModal);
     if (param.pathname === "/preview") {
+      console.log("Inside p if");
       dispatch(STORE_VERIFY_KEY_FLAG(false));
     } else {
       dispatch(STORE_VERIFY_KEY_FLAG(true));
+      console.log("Inside p else");
     }
   };
 
@@ -56,9 +56,9 @@ export default function Headers() {
                 Submit
               </button>
             ) : null}
-            {showModal && <DialogBox />}
           </div>
         </div>
+        {showModal && <DialogBox />}
       </div>
     </>
   );
