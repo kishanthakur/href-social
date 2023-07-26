@@ -15,7 +15,12 @@ const DialogBox = () => {
   const [error, setError] = useState(false);
   const [data, setData] = useState(false);
   const [hmac, setHmacAlgo, setHmacMessage, setHmacSecret] = useHmac();
-
+  const hmacRef = useRef(null);
+  const [verifyKey, setVerifyKey] = useState(false);
+  const [verifyKeyError, setVerifyKeyError] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [secret, setSecret] = useState(false);
+  const [hasDispatched, setHasDispatched] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -33,9 +38,6 @@ const DialogBox = () => {
       navigate(`/${DATA_FROM_STATE.username}`);
     }
   };
-
-  const [verifyKey, setVerifyKey] = useState(false);
-  const [verifyKeyError, setVerifyKeyError] = useState(false);
 
   const handleSubmit = () => {
     setModal(true);
@@ -76,8 +78,6 @@ const DialogBox = () => {
     }
   };
 
-  const [secret, setSecret] = useState(false);
-
   // check if hmac is updated with new value
   useEffect(() => {
     if (hmac && securityQ.length > 0 && !submit) {
@@ -85,8 +85,6 @@ const DialogBox = () => {
       setSecret(true);
     }
   }, [hmac, securityQ, submit]);
-
-  const [hasDispatched, setHasDispatched] = useState(false);
 
   useEffect(() => {
     if (data && secret && !hasDispatched) {
@@ -124,10 +122,6 @@ const DialogBox = () => {
     storeDataToDB();
   }, [data, secret, hasDispatched, DATA_FROM_STATE]);
 
-  const hmacRef = useRef(null);
-
-  const [isCopied, setIsCopied] = useState(false);
-
   const handleCopy = () => {
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 3000);
@@ -151,8 +145,8 @@ const DialogBox = () => {
                 <div className="relative p-5 flex-auto">
                   {VERIFY_KEY ? (
                     <>
-                      <p className="text-gray-600 mb-4">
-                        Enter security ket to edit profile
+                      <p className="text-gray-600 mb-1">
+                        Enter security key to edit profile
                       </p>
                       <input
                         type="text"
@@ -246,6 +240,15 @@ const DialogBox = () => {
                       onClick={goToMyProfile}
                     >
                       Go to my Profile
+                    </button>
+                  ) : null}
+                  {VERIFY_KEY ? (
+                    <button
+                      className="text-white bg-blue-600 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      type="button"
+                      onClick={() => setModal(false)}
+                    >
+                      Cancel
                     </button>
                   ) : null}
                   {submit ? (

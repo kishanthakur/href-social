@@ -13,17 +13,14 @@ export default function Headers() {
   const [showModal, setShowModal] = useState(false);
 
   const handleEditProfileClick = () => {
-    console.log("Inside edit profile");
-    console.log("showModal : " + showModal);
+    console.log("Modal" + showModal);
     setShowModal(true);
-    console.log("showModal : " + showModal);
     if (param.pathname === "/preview") {
-      console.log("Inside p if");
       dispatch(STORE_VERIFY_KEY_FLAG(false));
     } else {
       dispatch(STORE_VERIFY_KEY_FLAG(true));
-      console.log("Inside p else");
     }
+    console.log("Modal" + showModal);
   };
 
   return (
