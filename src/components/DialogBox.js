@@ -135,19 +135,24 @@ const DialogBox = () => {
             <div className="relative w-3/4 sm:w-3/4 lg:w-1/2 xl:w-1/3 my-10 mx-auto ">
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <div className="flex flex-col items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                  <h3 className="text-xl sm:text-xl lg:text-2xl xl:text-3xl font=semibold">
-                    Congratulations!
-                  </h3>
-                  <h5 className="text-sm mt-1 text-gray-500 font=semibold">
-                    Now, you have all your social links at one place.
-                  </h5>
+                  {VERIFY_KEY ? (
+                    <h3 className="text-xl sm:text-xl lg:text-2xl xl:text-3xl font=semibold">
+                      VERIFICATION
+                    </h3>
+                  ) : (
+                    <>
+                      <h3 className="text-xl sm:text-xl lg:text-2xl xl:text-3xl font=semibold">
+                        Congratulations!
+                      </h3>
+                      <h5 className="text-sm mt-1 text-gray-500 font=semibold">
+                        Now, you have all your social links at one place.
+                      </h5>
+                    </>
+                  )}
                 </div>
                 <div className="relative p-5 flex-auto">
                   {VERIFY_KEY ? (
                     <>
-                      <p className="text-gray-600 mb-1">
-                        Enter security key to edit profile
-                      </p>
                       <input
                         type="text"
                         value={securityKey}
