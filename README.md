@@ -4,8 +4,8 @@
 
 **href social** is a web application built with ReactJS, JavaScript, Tailwind CSS, Redux, and Redux Toolkit that allows users to create personalized link pages with their various social media profiles and websites. The project utilizes `react-hash` to generate unique hashcodes for each user's page. The hashcode serves as a security key to enable users to edit their profiles securely.
 
-## To create a profile : [href](https://href-social.vercel.app/) 
-## To open a profile : https://href-social.vercel.app/kishanthakur
+## To create a profile : [href.social](https://href-social.vercel.app/) 
+## To open a profile : [href.social/kishanthakur](https://href-social.vercel.app/kishanthakur) 
 
 ## Features
 
