@@ -133,7 +133,6 @@ export default function Form() {
         }
       }
     } else {
-      console.log(isUploading);
       if (!isUploading) {
         if (Object.keys(errors).length === 0 && !submit) {
           navigate("/preview");

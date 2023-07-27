@@ -218,7 +218,7 @@ const DialogBox = () => {
                         <button
                           type="button"
                           onClick={handleCopy}
-                          className="mt-2 sm:mt-0 ml-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded hover:from-purple-600 hover:to-blue-500 transform hover:scale-105 active:scale-95 transition-all duration-300"
+                          className="mt-2 sm:mt-6 ml-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded hover:from-purple-600 hover:to-blue-500 transform hover:scale-105 active:scale-95 transition-all duration-300"
                         >
                           {isCopied ? "Copied" : "Copy"}
                         </button>
