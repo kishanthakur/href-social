@@ -1,8 +1,8 @@
-# href social - All your social links at one place
+# href social - All your social links in one place
 
 ## Overview
 
-**href social** is a web application built with ReactJS, JavaScript, Tailwind CSS, Redux, and Redux Toolkit that allows users to create personalized link pages with their various social media profiles and websites. The project utilizes `react-hash` to generate unique hashcodes for each user's page. The hashcode serves as a security key to enable users to edit their profiles securely.
+**href social** is a web application built with ReactJS, JavaScript, Tailwind CSS, Redux, Redux Toolkit, and react-hook-form that allows users to create personalized link pages with their various social media profiles and websites. The project utilizes `react-hash` to generate unique hashcodes for each user's page. This hashcode serves as a security key to enable users to edit their profiles securely.
 
 ## To create a profile : [href.social](https://href-social.vercel.app/) 
 ## To open a profile : [href.social/kishanthakur](https://href-social.vercel.app/kishanthakur) 
@@ -34,10 +34,10 @@ npm start
 ## Usage
 
 1. Upon visiting the website, you will be prompted with a form to create your personalized link page.
-2. Input your desired username, profile picture URL, and social media links using the provided input fields.
+2. Input your desired username, profile picture URL, and social media links using the provided input fields and react-hook-form for efficient form handling.
 3. Click on the "Add Link" button to include additional links as needed.
 4. To edit or remove a link, hover over the link card and click on the corresponding buttons.
-5. Once you are satisfied with your page, click the "Submit" button, a dialog box will popup and will ask you to enter security question in case you forget your security, on submit the user will get their unique security which they can save.
+5. Once you are satisfied with your page, click the "Submit" button. A dialog box will pop up and ask you to enter a security question in case you forget your security code. On submission, you will receive a unique security code to save.
 6. Your link page will be generated with a custom URL, which you can copy and share with others.
 7. To edit your profile, navigate to the generated URL and provide the security key associated with your page. This ensures only you can make changes to your profile.
 
@@ -47,15 +47,18 @@ npm start
 - JavaScript: The programming language used for the website's logic.
 - Tailwind CSS: A utility-first CSS framework for streamlined UI development.
 - Redux: A state management library for efficient handling of the application's state.
-- Redux Toolkit: An official opinionated way to use Redux for robust and maintainable state management.
+- Redux Toolkit: The official, opinionated way to use Redux for robust and maintainable state management.
 - react-hash: A library used to generate unique hashcodes for custom URLs and as a security key for profile editing.
+- react-hook-form: A library for efficient, flexible, and extensible form handling.
+- MongoDB Atlas realm: Used for storing user data securely in the cloud.
 
 ## Contributing
 
 Contributions are more than welcome! If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
 
-## Acknowledgments
+## Special Thanks
 
-- Gratitude to the creators and maintainers of the open-source libraries and frameworks that have been instrumental in this project.
+A special shoutout to the team behind the react-hash open-source library. Your contribution to the community is invaluable.
+To learn more about their work and maybe contribute or use react-hash in your projects, check out their [repository](https://github.com/Drazail/react-hash/).
 
 Embrace the power of href socializing! 🌐
