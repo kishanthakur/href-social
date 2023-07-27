@@ -3,7 +3,11 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { App, Credentials } from "realm-web";
-import { STORE_DATA_IN_STATE, STORE_TOTAL_CUSTOM_LINKS } from "../Reducers";
+import {
+  STORE_DATA_IN_STATE,
+  STORE_TOTAL_CUSTOM_LINKS,
+  STORE_IMAGE_URL,
+} from "../Reducers";
 import AWS from "aws-sdk";
 import Loading from "./Loading";
 import DialogBox from "./DialogBox";
@@ -49,19 +53,15 @@ export default function Form() {
     let fileList = "";
 
     if (watchInputs["photo"][0].name) {
-      console.log("Inside data if");
       fileList = data.photo[0].name;
-      console.log(fileList);
     } else {
-      console.log("inside data else");
       fileList = DATA_FROM_STATE.photo;
-      console.log(fileList);
     }
     const newDataWithPhoto = {
       ...newDataWithOutPhoto,
       photo: fileList,
     };
-    console.log("newDataWithPhoto : " + newDataWithPhoto);
+
     dispatch(STORE_DATA_IN_STATE(newDataWithPhoto));
     dispatch(STORE_TOTAL_CUSTOM_LINKS(links));
 
@@ -99,14 +99,14 @@ export default function Form() {
         if (hasChanged) {
           for (let key in watchInputs) {
             if (key !== "securityQuestion" && key !== "securityKey") {
-              if (watchInputs[key] !== DATA_FROM_STATE[key]) {
+              let inputs = watchInputs[key];
+              if (key === "photo") {
+                inputs = watchInputs["photo"][0].name;
+              }
+              if (inputs !== DATA_FROM_STATE[key]) {
                 setLoading(true);
                 console.log(
-                  key +
-                    " - " +
-                    DATA_FROM_STATE[key] +
-                    " ==== " +
-                    watchInputs[key]
+                  key + " - " + DATA_FROM_STATE[key] + " ==== " + inputs
                 );
 
                 const app = new App({ id: "href-social-qmufp" });
@@ -122,6 +122,7 @@ export default function Form() {
                     { username: DATA_FROM_STATE["username"] },
                     { $set: { [key]: watchInputs["photo"][0].name } }
                   );
+
                   // const value = watchInputs["photo"][0].name;
                   // dispatch(UPDATE_FORM_DATA({ key, value }));
                 } else {
@@ -140,9 +141,10 @@ export default function Form() {
         }
       }
     } else {
-      console.log("isUploading - " + isUploading);
+      console.log(isUploading);
       if (!isUploading) {
         if (Object.keys(errors).length === 0 && !submit) {
+          console.log("previewinggggggg");
           navigate("/preview");
         } else {
           setShowModal(true);
@@ -258,8 +260,9 @@ export default function Form() {
   }, [DATA_FROM_STATE, setValue, location]);
 
   // upload photo to s3
-  function addPhoto(data) {
+  async function addPhoto(data) {
     if (data.username && data.photo && document.getElementById("photo")) {
+      //setIsUploading(true);
       AWS.config.update({
         accessKeyId: process.env.REACT_APP_AWS_APIKEY,
         secretAccessKey: process.env.REACT_APP_AWS_SECRET,
@@ -290,20 +293,20 @@ export default function Form() {
         },
       });
       //setLoading(true);
-      setIsUploading(true);
-      var promise = upload.promise();
-      promise.then(
-        function (data) {
-          console.log("Successfully uploaded photo");
-          setIsUploading(false);
-          //setLoading(false);
-        },
-        function (err) {
-          //setLoading(false);
-          setIsUploading(false);
-          return console.log(err.message);
-        }
-      );
+
+      try {
+        await upload.promise();
+        console.log("Successfully uploaded photo");
+        const s3Url = `https://${albumBucketName}.s3.${process.env.REACT_APP_AWS_REGION}.amazonaws.com/${photoKey}`;
+        console.log("s3Url : " + s3Url);
+        dispatch(STORE_IMAGE_URL(s3Url));
+
+        setIsUploading(false);
+        console.log(isUploading);
+      } catch (err) {
+        setIsUploading(false);
+        console.log(err.message);
+      }
     }
   }
 

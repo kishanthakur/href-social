@@ -8,10 +8,10 @@ import {
   STORE_EDIT_PROFILE_FLAG,
   STORE_PREVIEW_FLAG,
 } from "../Reducers";
-import AWS from "aws-sdk";
 
 export default function Profile() {
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
+  const IMG_URL = useSelector((state) => state.DATA.IMAGE);
   //const IMAGE = useSelector((state) => state.DATA.IMAGE);
 
   const location = useLocation();
@@ -87,57 +87,85 @@ export default function Profile() {
         key !== "photo" &&
         key !== "_id" &&
         key !== "securityKey" &&
-        key !== "securityQuestion"
+        key !== "securityQuestion" &&
+        key !== "ImgUrl"
       );
     })
   );
 
   // fetch the photo from s3
+  // useEffect(() => {
+  //   //console.log("Inside fetch photo");
+  //   console.log(profileData);
+  //   if (profileData.username) {
+  //     function displayPhoto(photoKey) {
+  //       setLoading(true);
+  //       dispatch(STORE_EDIT_PROFILE_FLAG(false));
+  //       const albumBucketName = "href-social";
+
+  //       AWS.config.update({
+  //         accessKeyId: process.env.REACT_APP_AWS_APIKEY,
+  //         secretAccessKey: process.env.REACT_APP_AWS_SECRET,
+  //         region: process.env.REACT_APP_AWS_REGION,
+  //       });
+
+  //       const s3 = new AWS.S3();
+  //       const params = {
+  //         Bucket: albumBucketName,
+  //         Key: photoKey,
+  //       };
+
+  //       s3.getObject(params, function (err, data) {
+  //         if (err) {
+  //           console.log(err, err.stack); // Handle errors
+  //         } else {
+  //           // Convert the fetched data to a blob and create an object URL
+  //           const blob = new Blob([data.Body], { type: data.ContentType });
+  //           const url = URL.createObjectURL(blob);
+  //           setPhotoURL(url);
+  //           setLoading(false);
+  //           dispatch(STORE_EDIT_PROFILE_FLAG(true));
+  //         }
+  //       });
+  //     }
+
+  //     console.log("pd : " + profileData.photo);
+
+  //     var fileExtension = profileData.photo.split(".").pop();
+  //     displayPhoto(
+  //       `users/photos/${profileData.photo.split(".")[0]}_${
+  //         profileData.username
+  //       }.${fileExtension}`
+  //     );
+  //   }
+  // }, [profileData, dispatch]);
+
   useEffect(() => {
-    //console.log("Inside fetch photo");
-    console.log(profileData);
-    if (profileData.username) {
-      function displayPhoto(photoKey) {
-        setLoading(true);
-        dispatch(STORE_EDIT_PROFILE_FLAG(false));
-        const albumBucketName = "href-social";
-
-        AWS.config.update({
-          accessKeyId: process.env.REACT_APP_AWS_APIKEY,
-          secretAccessKey: process.env.REACT_APP_AWS_SECRET,
-          region: process.env.REACT_APP_AWS_REGION,
-        });
-
-        const s3 = new AWS.S3();
-        const params = {
-          Bucket: albumBucketName,
-          Key: photoKey,
-        };
-
-        s3.getObject(params, function (err, data) {
-          if (err) {
-            console.log(err, err.stack); // Handle errors
-          } else {
-            // Convert the fetched data to a blob and create an object URL
-            const blob = new Blob([data.Body], { type: data.ContentType });
-            const url = URL.createObjectURL(blob);
-            setPhotoURL(url);
-            setLoading(false);
-            dispatch(STORE_EDIT_PROFILE_FLAG(true));
-          }
-        });
-      }
-
-      console.log("pd : " + profileData.photo);
-
-      var fileExtension = profileData.photo.split(".").pop();
-      displayPhoto(
-        `users/photos/${profileData.photo.split(".")[0]}_${
-          profileData.username
-        }.${fileExtension}`
+    async function updatePhoto() {
+      const app = new App({ id: "href-social-qmufp" });
+      await app.logIn(Credentials.anonymous());
+      const mongoClient = app.currentUser.mongoClient("mongodb-atlas");
+      const collection = mongoClient
+        .db("href-social-db")
+        .collection("href-social-collection");
+      await collection.updateOne(
+        { username: DATA_FROM_STATE["username"] },
+        { $set: { ImgUrl: IMG_URL } }
       );
+      console.log("Daataa updated");
     }
-  }, [profileData, dispatch]);
+
+    if (IMG_URL) {
+      console.log(IMG_URL);
+      setPhotoURL(IMG_URL);
+      setLoading(false);
+      updatePhoto();
+    } else if (profileData.ImgUrl) {
+      console.log(profileData.ImgUrl);
+      setPhotoURL(profileData.ImgUrl);
+      setLoading(false);
+    }
+  }, [DATA_FROM_STATE, IMG_URL, profileData]);
 
   // if user directly tries to access preview page, then navigate to home page
   useEffect(() => {

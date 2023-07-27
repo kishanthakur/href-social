@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DialogBox from "./DialogBox";
 import { useDispatch, useSelector } from "react-redux";
 import { STORE_VERIFY_KEY_FLAG } from "../Reducers";
@@ -7,20 +7,25 @@ import { STORE_VERIFY_KEY_FLAG } from "../Reducers";
 export default function Headers() {
   const param = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const EDIT_PROFILE = useSelector((state) => state.DATA.EDIT_PROFILE);
+  const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
 
   const [showModal, setShowModal] = useState(false);
 
   const handleEditProfileClick = () => {
-    console.log("Modal" + showModal);
-    setShowModal(true);
+    //console.log("Modal" + showModal);
+
     if (param.pathname === "/preview") {
+      setShowModal(false);
       dispatch(STORE_VERIFY_KEY_FLAG(false));
+      navigate(`/edit/${DATA_FROM_STATE.username}`);
     } else {
+      setShowModal(true);
       dispatch(STORE_VERIFY_KEY_FLAG(true));
     }
-    console.log("Modal" + showModal);
+    //console.log("Modal" + showModal);
   };
 
   return (

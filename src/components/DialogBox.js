@@ -27,6 +27,7 @@ const DialogBox = () => {
 
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
   const VERIFY_KEY = useSelector((state) => state.DATA.VERIFY_KEY);
+  const IMG_URL = useSelector((state) => state.DATA.IMAGE);
 
   const goToMyProfile = () => {
     navigate(`/${DATA_FROM_STATE.username}`);
@@ -92,6 +93,7 @@ const DialogBox = () => {
         ...DATA_FROM_STATE,
         securityKey: { hmac },
         securityQuestion: securityQ,
+        ImgUrl: IMG_URL,
       };
 
       // Check if data has genuinely changed
@@ -101,7 +103,16 @@ const DialogBox = () => {
         setHasDispatched(true);
       }
     }
-  }, [DATA_FROM_STATE, data, dispatch, hasDispatched, hmac, secret, securityQ]);
+  }, [
+    DATA_FROM_STATE,
+    IMG_URL,
+    data,
+    dispatch,
+    hasDispatched,
+    hmac,
+    secret,
+    securityQ,
+  ]);
 
   useEffect(() => {
     async function storeDataToDB() {

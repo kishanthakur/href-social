@@ -5,7 +5,7 @@ const initialState = {
   TOTAL_CUSTOM_LINKS: {},
   EDIT_PROFILE: false,
   PREVIEW: false,
-  IMAGE: "",
+  IMAGE: null,
   DB_DATA: {},
   VERIFY_KEY: false,
 };
