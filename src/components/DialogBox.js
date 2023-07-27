@@ -44,26 +44,21 @@ const DialogBox = () => {
     setModal(true);
 
     if (VERIFY_KEY) {
-      console.log("Inside verify");
       if (securityKey === "") {
         setError(true);
       } else {
         setVerifyKey(true);
         setError(false);
-        console.log("Inside verify else");
-        console.log(DATA_FROM_STATE.securityKey.hmac + " ==== " + securityKey);
+
         if (DATA_FROM_STATE.securityKey.hmac === securityKey) {
-          console.log("Inside true");
           setVerifyKeyError(false);
           setSubmit(false);
           setVerifyKey(false);
           setModal(false);
           navigate(`/edit/${DATA_FROM_STATE.username}`);
         } else {
-          console.log("Inside verify error");
           setVerifyKey(false);
           setVerifyKeyError(true);
-          console.log(verifyKeyError);
         }
       }
     } else {
@@ -98,7 +93,6 @@ const DialogBox = () => {
 
       // Check if data has genuinely changed
       if (JSON.stringify(updatedData) !== JSON.stringify(DATA_FROM_STATE)) {
-        console.log("INSIDE DISPATCH DATA");
         dispatch(STORE_DATA_IN_STATE(updatedData));
         setHasDispatched(true);
       }
@@ -126,7 +120,6 @@ const DialogBox = () => {
 
         await collection.insertOne(DATA_FROM_STATE);
 
-        console.log("Db updatedddd");
         setHasDispatched(false); // Reset after DB update
       }
     }

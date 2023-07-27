@@ -15,8 +15,6 @@ export default function Headers() {
   const [showModal, setShowModal] = useState(false);
 
   const handleEditProfileClick = () => {
-    //console.log("Modal" + showModal);
-
     if (param.pathname === "/preview") {
       setShowModal(false);
       dispatch(STORE_VERIFY_KEY_FLAG(false));
@@ -25,7 +23,6 @@ export default function Headers() {
       setShowModal(true);
       dispatch(STORE_VERIFY_KEY_FLAG(true));
     }
-    //console.log("Modal" + showModal);
   };
 
   return (

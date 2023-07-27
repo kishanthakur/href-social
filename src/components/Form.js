@@ -35,7 +35,6 @@ export default function Form() {
   const CUSTOM_LINKS = useSelector((state) => state.DATA.TOTAL_CUSTOM_LINKS);
   const PREVIEW = useSelector((state) => state.DATA.PREVIEW);
 
-  // const [customLink, setCustomLink] = useState(CUSTOM_LINKS);
   const [links, setLinks] = useState(CUSTOM_LINKS);
   const [linkError, setLinkError] = useState(false);
   const [showModal, setShowModal] = useState();
@@ -95,7 +94,6 @@ export default function Form() {
           navigate("/preview");
         }
       } else {
-        console.log("hasChanged - " + hasChanged);
         if (hasChanged) {
           for (let key in watchInputs) {
             if (key !== "securityQuestion" && key !== "securityKey") {
@@ -105,9 +103,6 @@ export default function Form() {
               }
               if (inputs !== DATA_FROM_STATE[key]) {
                 setLoading(true);
-                console.log(
-                  key + " - " + DATA_FROM_STATE[key] + " ==== " + inputs
-                );
 
                 const app = new App({ id: "href-social-qmufp" });
                 await app.logIn(Credentials.anonymous());
@@ -116,15 +111,12 @@ export default function Form() {
                 const collection = mongoClient
                   .db("href-social-db")
                   .collection("href-social-collection");
-                console.log(watchInputs["photo"][0].name);
+
                 if (key === "photo") {
                   await collection.updateOne(
                     { username: DATA_FROM_STATE["username"] },
                     { $set: { [key]: watchInputs["photo"][0].name } }
                   );
-
-                  // const value = watchInputs["photo"][0].name;
-                  // dispatch(UPDATE_FORM_DATA({ key, value }));
                 } else {
                   await collection.updateOne(
                     { username: DATA_FROM_STATE["username"] },
@@ -144,7 +136,6 @@ export default function Form() {
       console.log(isUploading);
       if (!isUploading) {
         if (Object.keys(errors).length === 0 && !submit) {
-          console.log("previewinggggggg");
           navigate("/preview");
         } else {
           setShowModal(true);
@@ -183,11 +174,8 @@ export default function Form() {
   };
 
   const deleteCustomLink = ({ key }) => {
-    console.log(key);
     const { [key]: valueToDelete, ...newObj } = links;
-    console.log(newObj);
     setLinks(newObj);
-    //setCustomLink(customLink.slice(0, -1));
   };
 
   const validateFileExtension = () => {
@@ -236,7 +224,6 @@ export default function Form() {
     if (e.target.value === "Update") {
       setUpdate(true);
     }
-    console.log(e.target.value);
   };
 
   const handlePreviewClick = (e) => {
@@ -292,20 +279,17 @@ export default function Form() {
           Body: file,
         },
       });
-      //setLoading(true);
 
       try {
         await upload.promise();
         console.log("Successfully uploaded photo");
         const s3Url = `https://${albumBucketName}.s3.${process.env.REACT_APP_AWS_REGION}.amazonaws.com/${photoKey}`;
-        console.log("s3Url : " + s3Url);
         dispatch(STORE_IMAGE_URL(s3Url));
-
         setIsUploading(false);
-        console.log(isUploading);
       } catch (err) {
         setIsUploading(false);
         console.log(err.message);
+        alert(err.message + " Try again");
       }
     }
   }
