@@ -3,7 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { App, Credentials } from "realm-web";
 import { useSelector, useDispatch } from "react-redux";
 import Loading from "./Loading";
-import { STORE_EDIT_PROFILE_FLAG, STORE_PREVIEW_FLAG } from "../Reducers";
+import {
+  STORE_EDIT_PROFILE_FLAG,
+  STORE_DATA_IN_STATE,
+  STORE_PREVIEW_FLAG,
+} from "../Reducers";
 
 export default function Profile() {
   const DATA_FROM_STATE = useSelector((state) => state.DATA.FORM_DATA);
@@ -56,6 +60,8 @@ export default function Profile() {
           setProfileData(dataByUserName);
           setLoading(false);
           dispatch(STORE_EDIT_PROFILE_FLAG(true));
+          const { _id, ...updatedData } = dataByUserName;
+          dispatch(STORE_DATA_IN_STATE(updatedData));
         }
       }
       fetchData();
