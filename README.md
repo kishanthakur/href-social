@@ -1,4 +1,4 @@
-# href social - All your social links in one place
+# href social - All your social links at one place
 
 ## Overview
 
@@ -6,6 +6,11 @@
 
 ## To create a profile : [href.social](https://href-social.vercel.app/) 
 ## To open a profile : [href.social/kishanthakur](https://href-social.vercel.app/kishanthakur) 
+
+## Demo
+
+![href-demo](https://github.com/kishanthakur/href-social/assets/49359184/c1c0f3df-0acb-471d-88ae-4fca4369ad5a)
+
 
 ## Features
 
