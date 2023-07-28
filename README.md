@@ -9,11 +9,7 @@
 
 ## Demo
 
-![href-demo_AdobeExpress](https://github.com/kishanthakur/href-social/assets/49359184/dd19e5c1-f2f3-4526-807d-12c963eaa50b)
-
-
-
-
+![href-demo-2](https://github.com/kishanthakur/href-social/assets/49359184/fe7ba3c8-94e1-40f6-8f0d-5de933bea5e6)
 
 
 ## Features
